@@ -76,38 +76,44 @@ export default function Map() {
             return (
               <motion.button
                 key={zone.id}
-                className="absolute z-10 flex flex-col items-center gap-1"
+                className="absolute z-10 flex h-12 w-12 items-center justify-center md:h-14 md:w-14"
                 style={{
                   left: `${pos.x * 100}%`,
                   top: `${pos.y * 100}%`,
-                  transform: 'translate(-50%, -100%)',
+                  transform: 'translate(-50%, -50%)',
                 }}
                 onClick={() => handleZoneClick(zone as Zone)}
                 whileTap={{ scale: 0.85 }}
+                aria-label={zone.name}
               >
                 {/* Imagen de pin UI */}
                 <motion.div
-                  className="relative"
+                  className="relative flex h-11 w-11 items-center justify-center rounded-full bg-white/85 shadow-[0_4px_14px_rgba(61,46,31,0.35)] ring-2 ring-[#3D2E1F]/25 md:h-12 md:w-12"
                   animate={zone.playable && !completed ? { scale: [1, 1.08, 1] } : {}}
                   transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
                 >
                   <img
                     src="/ui/zone-pin.png"
                     alt=""
-                    className={`w-10 h-10 md:w-12 md:h-12 drop-shadow-lg ${
-                      !zone.playable ? 'opacity-50 grayscale' : ''
-                    } ${completed ? 'hue-rotate-[100deg]' : ''}`}
+                    className={`h-9 w-9 drop-shadow-[0_2px_2px_rgba(0,0,0,0.45)] md:h-10 md:w-10 ${
+                      completed ? 'hue-rotate-[100deg]' : ''
+                    }`}
                   />
                   {completed && (
                     <span className="absolute inset-0 flex items-center justify-center text-white text-sm font-bold">✓</span>
                   )}
+                  {!zone.playable && (
+                    <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-[#3D2E1F] text-[10px] text-white shadow">
+                      🔒
+                    </span>
+                  )}
                 </motion.div>
                 {/* Label */}
                 <div
-                  className={`text-white text-[10px] md:text-xs font-bold px-2 py-0.5 rounded-full whitespace-nowrap shadow ${
+                  className={`absolute left-1/2 top-full mt-1 -translate-x-1/2 text-white text-[10px] md:text-xs font-bold px-2 py-0.5 rounded-full whitespace-nowrap shadow ${
                     zone.playable
                       ? completed ? 'bg-[#7BA577]' : 'bg-[#E07856]'
-                      : 'bg-[#3D2E1F]/70'
+                      : 'bg-[#3D2E1F]/90'
                   }`}
                 >
                   {zone.name}

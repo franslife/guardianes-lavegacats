@@ -97,23 +97,53 @@ function DraggablePin({ elementId, x, y, type, label, isSelected, onSelect, onMo
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
     >
-      <div
-        style={{
-          width: 36,
-          height: 36,
-          borderRadius: '50%',
-          background: color,
-          border: isSelected ? '3px solid white' : '2px solid rgba(0,0,0,0.3)',
-          boxShadow: isSelected ? `0 0 0 2px ${color}, 0 4px 12px rgba(0,0,0,0.4)` : '0 2px 6px rgba(0,0,0,0.3)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontSize: 16,
-        }}
-        title={label}
-      >
-        {icon}
-      </div>
+      {type === 'zone_pin' ? (
+        <div
+          style={{
+            width: 46,
+            height: 46,
+            borderRadius: '50%',
+            background: 'rgba(255,255,255,0.86)',
+            border: isSelected ? '3px solid white' : '2px solid rgba(61,46,31,0.55)',
+            boxShadow: isSelected ? `0 0 0 3px ${color}, 0 8px 18px rgba(0,0,0,0.45)` : '0 4px 14px rgba(0,0,0,0.35)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+          title={label}
+        >
+          <img
+            src="/ui/zone-pin.png"
+            alt=""
+            style={{
+              width: 34,
+              height: 34,
+              objectFit: 'contain',
+              filter: 'drop-shadow(0 2px 2px rgba(0,0,0,0.35))',
+              pointerEvents: 'none',
+            }}
+            draggable={false}
+          />
+        </div>
+      ) : (
+        <div
+          style={{
+            width: 36,
+            height: 36,
+            borderRadius: '50%',
+            background: color,
+            border: isSelected ? '3px solid white' : '2px solid rgba(0,0,0,0.3)',
+            boxShadow: isSelected ? `0 0 0 2px ${color}, 0 4px 12px rgba(0,0,0,0.4)` : '0 2px 6px rgba(0,0,0,0.3)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: 16,
+          }}
+          title={label}
+        >
+          {icon}
+        </div>
+      )}
       {isSelected && (
         <div style={{
           position: 'absolute',
