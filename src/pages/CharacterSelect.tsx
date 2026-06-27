@@ -12,8 +12,9 @@ const CHARACTERS = [
 
 export default function CharacterSelect() {
   const navigate = useNavigate()
+  const characterId = useGameStore((s) => s.characterId)
   const setCharacter = useGameStore((s) => s.setCharacter)
-  const [selected, setSelected] = useState<string | null>(null)
+  const [selected, setSelected] = useState<string | null>(characterId)
 
   function handleContinue() {
     if (!selected) return

@@ -1,18 +1,16 @@
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { useGameStore } from '../store/gameStore'
 
 export default function Splash() {
   const navigate = useNavigate()
-  const characterId = useGameStore((s) => s.characterId)
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      navigate(characterId ? '/map' : '/select')
+      navigate('/select')
     }, 2500)
     return () => clearTimeout(timer)
-  }, [navigate, characterId])
+  }, [navigate])
 
   return (
     <div className="flex flex-col items-center justify-center min-h-dvh bg-[#F5EBD8] gap-6 px-8">
