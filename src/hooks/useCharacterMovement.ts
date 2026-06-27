@@ -16,6 +16,7 @@ export function useCharacterMovement(initialPosition: Position = { x: 0.5, y: 0.
   const [position, setPosition] = useState<Position>(initialPosition)
   const [direction, setDirection] = useState<Direction>('front')
   const [isMoving, setIsMoving] = useState(false)
+  const [duration, setDuration] = useState(0.9)
   const hasMoved = useRef(false)
 
   useEffect(() => {
@@ -28,17 +29,18 @@ export function useCharacterMovement(initialPosition: Position = { x: 0.5, y: 0.
     const dy = targetY - position.y
     setDirection(chooseDirection(dx, dy))
     setIsMoving(true)
-    setPosition({ x: targetX, y: targetY })
 
     const distance = Math.sqrt(dx * dx + dy * dy)
-    const duration = Math.max(500, distance * 2000)
+    const nextDuration = Math.min(3.4, Math.max(1.4, distance * 4.2))
+    setDuration(nextDuration)
+    setPosition({ x: targetX, y: targetY })
 
     setTimeout(() => {
       setIsMoving(false)
       setDirection('front')
       onArrival?.()
-    }, duration)
+    }, nextDuration * 1000)
   }
 
-  return { position, direction, isMoving, moveTo }
+  return { position, direction, isMoving, duration, moveTo }
 }

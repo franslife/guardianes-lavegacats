@@ -31,7 +31,7 @@ export default function Map() {
   const [selectedZone, setSelectedZone] = useState<Zone | null>(null)
 
   const spawnCoords = getCoords('map_character_spawn', viewport)
-  const { position, direction, isMoving, moveTo } = useCharacterMovement(spawnCoords)
+  const { position, direction, isMoving, duration, moveTo } = useCharacterMovement(spawnCoords)
 
   if (!characterId) {
     navigate('/select')
@@ -140,7 +140,7 @@ export default function Map() {
               top: `${position.y * 100}%`,
             }}
             style={{ transform: 'translate(-50%, -100%)' }}
-            transition={{ type: 'tween', ease: 'easeInOut', duration: 0.9 }}
+            transition={{ type: 'tween', ease: 'easeInOut', duration }}
           >
             <Character
               characterId={characterId}
