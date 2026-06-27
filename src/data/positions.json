@@ -2,230 +2,422 @@
   "catio2": {
     "type": "zone_pin",
     "label": "Catio 2",
-    "desktop": { "x": 0.18, "y": 0.42 },
-    "mobile":  { "x": 0.27, "y": 0.20 }
+    "desktop": {
+      "x": 0.26684407331788673,
+      "y": 0.5376698763914498
+    },
+    "mobile": {
+      "x": 0.5039060598685812,
+      "y": 0.2704469090611085
+    }
   },
   "zona_relax": {
     "type": "zone_pin",
     "label": "Zona Relax",
-    "desktop": { "x": 0.73, "y": 0.32 },
-    "mobile":  { "x": 0.73, "y": 0.13 }
+    "desktop": {
+      "x": 0.7683696175816109,
+      "y": 0.4291811787202076
+    },
+    "mobile": {
+      "x": 0.74756631783889,
+      "y": 0.271799109459939
+    }
   },
   "enfermeria": {
     "type": "zone_pin",
     "label": "Enfermería",
-    "desktop": { "x": 0.47, "y": 0.57 },
-    "mobile":  { "x": 0.48, "y": 0.45 }
+    "desktop": {
+      "x": 0.500535278689026,
+      "y": 0.6819777368025678
+    },
+    "mobile": {
+      "x": 0.518337795083962,
+      "y": 0.5622763405905974
+    }
   },
   "comedor": {
     "type": "zone_pin",
     "label": "Comedor",
-    "desktop": { "x": 0.73, "y": 0.65 },
-    "mobile":  { "x": 0.68, "y": 0.63 }
+    "desktop": {
+      "x": 0.8066114564933129,
+      "y": 0.5757836508912109
+    },
+    "mobile": {
+      "x": 0.8827208566561207,
+      "y": 0.5674392875679515
+    }
   },
   "jardines": {
     "type": "zone_pin",
     "label": "Jardines",
-    "desktop": { "x": 0.30, "y": 0.75 },
-    "mobile":  { "x": 0.28, "y": 0.58 }
+    "desktop": {
+      "x": 0.0571410000535279,
+      "y": 0.600266338864987
+    },
+    "mobile": {
+      "x": 0.19920905329763933,
+      "y": 0.6231936514874205
+    }
   },
   "casa_azul": {
     "type": "zone_pin",
     "label": "Casa Azul",
-    "desktop": { "x": 0.10, "y": 0.82 },
-    "mobile":  { "x": 0.27, "y": 0.80 }
+    "desktop": {
+      "x": 0.325315623255565,
+      "y": 0.740258143822987
+    },
+    "mobile": {
+      "x": 0.5344244341688975,
+      "y": 0.7383150763515175
+    }
   },
   "caravana": {
     "type": "zone_pin",
     "label": "Caravana",
-    "desktop": { "x": 0.73, "y": 0.85 },
-    "mobile":  { "x": 0.68, "y": 0.82 }
+    "desktop": {
+      "x": 0.7114465524229008,
+      "y": 0.8945229802636072
+    },
+    "mobile": {
+      "x": 0.526697493307374,
+      "y": 0.9265714207665201
+    }
   },
   "catio1": {
     "type": "zone_pin",
     "label": "Catio 1",
-    "desktop": { "x": 0.47, "y": 0.17 },
-    "mobile":  { "x": 0.48, "y": 0.03 }
+    "desktop": {
+      "x": 0.444101611188854,
+      "y": 0.31206719934439664
+    },
+    "mobile": {
+      "x": 0.17009004623996107,
+      "y": 0.3730570655885486
+    }
   },
-
   "map_character_spawn": {
     "type": "character_spawn",
     "label": "Spawn mapa principal",
     "zone": "map",
-    "desktop": { "x": 0.47, "y": 0.50 },
-    "mobile":  { "x": 0.48, "y": 0.35 }
+    "desktop": {
+      "x": 0.535,
+      "y": 0.325
+    },
+    "mobile": {
+      "x": 0.5,
+      "y": 0.16
+    }
   },
-
   "catio2_hotspot_1": {
     "type": "hotspot",
     "label": "Arenero 1",
     "zone": "catio2",
-    "desktop": { "x": 0.22, "y": 0.38 },
-    "mobile":  { "x": 0.22, "y": 0.38 }
+    "desktop": {
+      "x": 0.36241425982427566,
+      "y": 0.5292084955268729
+    },
+    "mobile": {
+      "x": 0.30514723777074715,
+      "y": 0.6809626574152484
+    }
   },
   "catio2_hotspot_2": {
     "type": "hotspot",
     "label": "Arenero 2",
     "zone": "catio2",
-    "desktop": { "x": 0.60, "y": 0.38 },
-    "mobile":  { "x": 0.60, "y": 0.38 }
+    "desktop": {
+      "x": 0.4152271493351074,
+      "y": 0.7009219422249539
+    },
+    "mobile": {
+      "x": 0.4984546118276953,
+      "y": 0.6869929248504384
+    }
   },
   "catio2_hotspot_3": {
     "type": "hotspot",
     "label": "Arenero 3",
     "zone": "catio2",
-    "desktop": { "x": 0.22, "y": 0.65 },
-    "mobile":  { "x": 0.22, "y": 0.65 }
+    "desktop": {
+      "x": 0.2974237801381019,
+      "y": 0.7791709349177082
+    },
+    "mobile": {
+      "x": 0.32964224872231684,
+      "y": 0.8725858442374409
+    }
   },
   "catio2_hotspot_4": {
     "type": "hotspot",
     "label": "Arenero 4",
     "zone": "catio2",
-    "desktop": { "x": 0.60, "y": 0.65 },
-    "mobile":  { "x": 0.60, "y": 0.65 }
+    "desktop": {
+      "x": 0.5892768384911259,
+      "y": 0.703885815748139
+    },
+    "mobile": {
+      "x": 0.596815151835785,
+      "y": 0.801317470219529
+    }
   },
   "catio2_spawn": {
     "type": "character_spawn",
     "label": "Spawn Catio 2",
     "zone": "catio2",
-    "desktop": { "x": 0.50, "y": 0.85 },
-    "mobile":  { "x": 0.50, "y": 0.85 }
+    "desktop": {
+      "x": 0.463165179356595,
+      "y": 0.8129891415693505
+    },
+    "mobile": {
+      "x": 0.589950798857264,
+      "y": 0.905073819920981
+    }
   },
-
   "comedor_hotspot_1": {
     "type": "hotspot",
     "label": "Comedero 1",
     "zone": "comedor",
-    "desktop": { "x": 0.20, "y": 0.45 },
-    "mobile":  { "x": 0.20, "y": 0.45 }
+    "desktop": {
+      "x": 0.27581381477827993,
+      "y": 0.5405381410913064
+    },
+    "mobile": {
+      "x": 0.10706984667802386,
+      "y": 0.9030718168656268
+    }
   },
   "comedor_hotspot_2": {
     "type": "hotspot",
     "label": "Comedero 2",
     "zone": "comedor",
-    "desktop": { "x": 0.45, "y": 0.45 },
-    "mobile":  { "x": 0.45, "y": 0.45 }
+    "desktop": {
+      "x": 0.8302210700985677,
+      "y": 0.5475244143959571
+    },
+    "mobile": {
+      "x": 0.8103431491847165,
+      "y": 0.6940885622968285
+    }
   },
   "comedor_hotspot_3": {
     "type": "hotspot",
     "label": "Comedero 3",
     "zone": "comedor",
-    "desktop": { "x": 0.70, "y": 0.45 },
-    "mobile":  { "x": 0.70, "y": 0.45 }
+    "desktop": {
+      "x": 0.7407148264550022,
+      "y": 0.8121969541760569
+    },
+    "mobile": {
+      "x": 0.7,
+      "y": 0.45
+    }
   },
   "comedor_hotspot_4": {
     "type": "hotspot",
     "label": "Comedero 4",
     "zone": "comedor",
-    "desktop": { "x": 0.45, "y": 0.68 },
-    "mobile":  { "x": 0.45, "y": 0.68 }
+    "desktop": {
+      "x": 0.4498023292269811,
+      "y": 0.723226114867172
+    },
+    "mobile": {
+      "x": 0.35014602092966657,
+      "y": 0.351729177479717
+    }
   },
   "comedor_spawn": {
     "type": "character_spawn",
     "label": "Spawn Comedor",
     "zone": "comedor",
-    "desktop": { "x": 0.50, "y": 0.85 },
-    "mobile":  { "x": 0.50, "y": 0.85 }
+    "desktop": {
+      "x": 0.5892080169453939,
+      "y": 0.7245987844021033
+    },
+    "mobile": {
+      "x": 0.8026648819664152,
+      "y": 0.8949449558827547
+    }
   },
-
   "zona_relax_hotspot_1": {
     "type": "hotspot",
     "label": "Bebedero 1",
     "zone": "zona_relax",
-    "desktop": { "x": 0.22, "y": 0.42 },
-    "mobile":  { "x": 0.22, "y": 0.42 }
+    "desktop": {
+      "x": 0.08195881412829865,
+      "y": 0.5161783787475244
+    },
+    "mobile": {
+      "x": 0.2223168654173765,
+      "y": 0.9494359002376594
+    }
   },
   "zona_relax_hotspot_2": {
     "type": "hotspot",
     "label": "Bebedero 2",
     "zone": "zona_relax",
-    "desktop": { "x": 0.50, "y": 0.42 },
-    "mobile":  { "x": 0.50, "y": 0.42 }
+    "desktop": {
+      "x": 0.4927507971829047,
+      "y": 0.35953015092535684
+    },
+    "mobile": {
+      "x": 0.07834022876612315,
+      "y": 0.5480782364028738
+    }
   },
   "zona_relax_hotspot_3": {
     "type": "hotspot",
     "label": "Bebedero 3",
     "zone": "zona_relax",
-    "desktop": { "x": 0.75, "y": 0.42 },
-    "mobile":  { "x": 0.75, "y": 0.42 }
+    "desktop": {
+      "x": 0.8108783923286917,
+      "y": 0.44357713583282116
+    },
+    "mobile": {
+      "x": 0.6735215380871258,
+      "y": 0.43662414292348456
+    }
   },
   "zona_relax_hotspot_4": {
     "type": "hotspot",
     "label": "Bebedero 4",
     "zone": "zona_relax",
-    "desktop": { "x": 0.50, "y": 0.65 },
-    "mobile":  { "x": 0.50, "y": 0.65 }
+    "desktop": {
+      "x": 0.29450268786370276,
+      "y": 0.9050604384347469
+    },
+    "mobile": {
+      "x": 0.41995619372110005,
+      "y": 0.7097071598328188
+    }
   },
   "zona_relax_spawn": {
     "type": "character_spawn",
     "label": "Spawn Zona Relax",
     "zone": "zona_relax",
-    "desktop": { "x": 0.50, "y": 0.85 },
-    "mobile":  { "x": 0.50, "y": 0.85 }
+    "desktop": {
+      "x": 0.5033646089024493,
+      "y": 0.7294611759885269
+    },
+    "mobile": {
+      "x": 0.6598929179849111,
+      "y": 0.9157538175758735
+    }
   },
-
   "enfermeria_hotspot_1": {
     "type": "hotspot",
     "label": "Gato recuperación 1",
     "zone": "enfermeria",
-    "desktop": { "x": 0.25, "y": 0.48 },
-    "mobile":  { "x": 0.25, "y": 0.48 }
+    "desktop": {
+      "x": 0.25876901195200847,
+      "y": 0.7138359625759748
+    },
+    "mobile": {
+      "x": 0.5389754198101728,
+      "y": 0.4302387521512279
+    }
   },
   "enfermeria_hotspot_2": {
     "type": "hotspot",
     "label": "Gato recuperación 2",
     "zone": "enfermeria",
-    "desktop": { "x": 0.50, "y": 0.35 },
-    "mobile":  { "x": 0.50, "y": 0.35 }
+    "desktop": {
+      "x": 0.3464476612144709,
+      "y": 0.9202758997473195
+    },
+    "mobile": {
+      "x": 0.4129958627403261,
+      "y": 0.7298262627366351
+    }
   },
   "enfermeria_hotspot_3": {
     "type": "hotspot",
     "label": "Gato recuperación 3",
     "zone": "enfermeria",
-    "desktop": { "x": 0.75, "y": 0.48 },
-    "mobile":  { "x": 0.75, "y": 0.48 }
+    "desktop": {
+      "x": 0.667948995208943,
+      "y": 0.527091254752852
+    },
+    "mobile": {
+      "x": 0.7634460939401314,
+      "y": 0.5747329745677057
+    }
   },
   "enfermeria_spawn": {
     "type": "character_spawn",
     "label": "Spawn Enfermería",
     "zone": "enfermeria",
-    "desktop": { "x": 0.50, "y": 0.85 },
-    "mobile":  { "x": 0.50, "y": 0.85 }
+    "desktop": {
+      "x": 0.7055967210356878,
+      "y": 0.8348425869015912
+    },
+    "mobile": {
+      "x": 0.167548407575918,
+      "y": 0.46882333719514
+    }
   },
-
   "jardines_hotspot_1": {
     "type": "hotspot",
     "label": "Gato escondido 1",
     "zone": "jardines",
-    "desktop": { "x": 0.20, "y": 0.40 },
-    "mobile":  { "x": 0.20, "y": 0.40 }
+    "desktop": {
+      "x": 0.2883737468743548,
+      "y": 0.4014136447449293
+    },
+    "mobile": {
+      "x": 0.20262837673399853,
+      "y": 0.776702543229437
+    }
   },
   "jardines_hotspot_2": {
     "type": "hotspot",
     "label": "Gato escondido 2",
     "zone": "jardines",
-    "desktop": { "x": 0.55, "y": 0.30 },
-    "mobile":  { "x": 0.55, "y": 0.30 }
+    "desktop": {
+      "x": 0.9006522753167703,
+      "y": 0.26866762275489997
+    },
+    "mobile": {
+      "x": 0.319410644376256,
+      "y": 0.217895018269316
+    }
   },
   "jardines_hotspot_3": {
     "type": "hotspot",
     "label": "Gato escondido 3",
     "zone": "jardines",
-    "desktop": { "x": 0.25, "y": 0.65 },
-    "mobile":  { "x": 0.25, "y": 0.65 }
+    "desktop": {
+      "x": 0.14015890130225658,
+      "y": 0.5935668920303216
+    },
+    "mobile": {
+      "x": 0.6802750060842054,
+      "y": 0.46210424235801895
+    }
   },
   "jardines_hotspot_4": {
     "type": "hotspot",
     "label": "Gato escondido 4",
     "zone": "jardines",
-    "desktop": { "x": 0.65, "y": 0.60 },
-    "mobile":  { "x": 0.65, "y": 0.60 }
+    "desktop": {
+      "x": 0.7025341622506175,
+      "y": 0.5958683329918733
+    },
+    "mobile": {
+      "x": 0.8322219518130932,
+      "y": 0.7381170267981534
+    }
   },
   "jardines_spawn": {
     "type": "character_spawn",
     "label": "Spawn Jardines",
     "zone": "jardines",
-    "desktop": { "x": 0.50, "y": 0.85 },
-    "mobile":  { "x": 0.50, "y": 0.85 }
+    "desktop": {
+      "x": 0.46022879340536654,
+      "y": 0.6646315645701018
+    },
+    "mobile": {
+      "x": 0.2990752007787783,
+      "y": 0.5359903843527194
+    }
   }
 }

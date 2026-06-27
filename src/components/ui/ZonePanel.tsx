@@ -1,5 +1,4 @@
 import { motion, AnimatePresence } from 'framer-motion'
-import { useNavigate } from 'react-router-dom'
 
 interface Zone {
   id: string
@@ -17,11 +16,10 @@ interface Zone {
 interface Props {
   zone: Zone | null
   onClose: () => void
+  onStartMission: (zoneId: string) => void
 }
 
-export default function ZonePanel({ zone, onClose }: Props) {
-  const navigate = useNavigate()
-
+export default function ZonePanel({ zone, onClose, onStartMission }: Props) {
   return (
     <AnimatePresence>
       {zone && (
@@ -55,9 +53,9 @@ export default function ZonePanel({ zone, onClose }: Props) {
                 <div className="flex flex-col gap-3">
                   <button
                     className="w-full bg-[#E07856] text-white font-bold py-4 rounded-2xl text-lg active:scale-95 transition-transform"
-                    onClick={() => navigate(`/zone/${zone.id}`)}
+                    onClick={() => onStartMission(zone.id)}
                   >
-                    Empezar misión
+                    Hacer la tarea
                   </button>
                   <button
                     className="w-full text-[#3D2E1F]/60 py-2 font-medium"

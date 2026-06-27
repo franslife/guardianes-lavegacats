@@ -33,6 +33,8 @@ export async function loadPositionsFromSupabase(): Promise<Partial<PositionsMap>
 
     const result: Partial<PositionsMap> = {}
     for (const row of data) {
+      if (row.element_id === 'map_character_spawn') continue
+
       if (!result[row.element_id]) {
         const defaults = (positionsJson as any)[row.element_id]
         result[row.element_id] = {

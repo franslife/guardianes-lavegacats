@@ -43,8 +43,15 @@ export default function Map() {
   }
 
   function handleZoneClick(zone: Zone) {
+    setSelectedZone(zone)
+  }
+
+  function handleStartMission(zoneId: string) {
+    const zone = zonesData.find((item) => item.id === zoneId)
+    if (!zone || !zone.playable) return
     const pos = getZonePos(zone)
-    moveTo(pos.x, pos.y, () => setSelectedZone(zone))
+    setSelectedZone(null)
+    moveTo(pos.x, pos.y, () => navigate(`/zone/${zone.id}`))
   }
 
   const mapSrc = isMobile ? '/map/map-mobile.webp' : '/map/map-desktop.webp'
@@ -72,30 +79,31 @@ export default function Map() {
           {/* Pines de zona — posicionados sobre la imagen */}
           {zonesData.map((zone) => {
             const completed = missionsCompleted.includes(zone.id)
+            const selected = selectedZone?.id === zone.id
             const pos = getZonePos(zone)
             return (
-              <motion.button
+              <button
                 key={zone.id}
-                className="absolute z-10 flex h-12 w-12 items-center justify-center md:h-14 md:w-14"
+                className="absolute z-10 flex h-11 w-11 items-center justify-center md:h-12 md:w-12"
                 style={{
                   left: `${pos.x * 100}%`,
                   top: `${pos.y * 100}%`,
                   transform: 'translate(-50%, -50%)',
                 }}
                 onClick={() => handleZoneClick(zone as Zone)}
-                whileTap={{ scale: 0.85 }}
                 aria-label={zone.name}
               >
                 {/* Imagen de pin UI */}
                 <motion.div
-                  className="relative flex h-11 w-11 items-center justify-center rounded-full bg-white/85 shadow-[0_4px_14px_rgba(61,46,31,0.35)] ring-2 ring-[#3D2E1F]/25 md:h-12 md:w-12"
+                  className="relative flex h-10 w-10 items-center justify-center rounded-full bg-white/75 shadow-[0_3px_10px_rgba(61,46,31,0.3)] ring-1 ring-[#3D2E1F]/25 md:h-11 md:w-11"
                   animate={zone.playable && !completed ? { scale: [1, 1.08, 1] } : {}}
+                  whileTap={{ scale: 0.92 }}
                   transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
                 >
                   <img
                     src="/ui/zone-pin.png"
                     alt=""
-                    className={`h-9 w-9 drop-shadow-[0_2px_2px_rgba(0,0,0,0.45)] md:h-10 md:w-10 ${
+                    className={`h-9 w-9 drop-shadow-[0_2px_2px_rgba(0,0,0,0.4)] md:h-10 md:w-10 ${
                       completed ? 'hue-rotate-[100deg]' : ''
                     }`}
                   />
@@ -111,14 +119,16 @@ export default function Map() {
                 {/* Label */}
                 <div
                   className={`absolute left-1/2 top-full mt-1 -translate-x-1/2 text-white text-[10px] md:text-xs font-bold px-2 py-0.5 rounded-full whitespace-nowrap shadow ${
-                    zone.playable
-                      ? completed ? 'bg-[#7BA577]' : 'bg-[#E07856]'
-                      : 'bg-[#3D2E1F]/90'
+                    selected
+                      ? 'bg-[#F7D87C] text-[#3D2E1F] ring-2 ring-white'
+                      : completed
+                        ? 'bg-[#7BA577]'
+                        : 'bg-[#E07856]'
                   }`}
                 >
                   {zone.name}
                 </div>
-              </motion.button>
+              </button>
             )
           })}
 
@@ -174,7 +184,11 @@ export default function Map() {
         </div>
       </div>
 
-      <ZonePanel zone={selectedZone} onClose={() => setSelectedZone(null)} />
+      <ZonePanel
+        zone={selectedZone}
+        onClose={() => setSelectedZone(null)}
+        onStartMission={handleStartMission}
+      />
     </div>
   )
 }

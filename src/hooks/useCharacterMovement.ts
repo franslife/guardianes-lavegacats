@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 type Direction = 'front' | 'back' | 'left' | 'right'
 
@@ -16,8 +16,14 @@ export function useCharacterMovement(initialPosition: Position = { x: 0.5, y: 0.
   const [position, setPosition] = useState<Position>(initialPosition)
   const [direction, setDirection] = useState<Direction>('front')
   const [isMoving, setIsMoving] = useState(false)
+  const hasMoved = useRef(false)
+
+  useEffect(() => {
+    if (!hasMoved.current) setPosition(initialPosition)
+  }, [initialPosition.x, initialPosition.y])
 
   function moveTo(targetX: number, targetY: number, onArrival?: () => void) {
+    hasMoved.current = true
     const dx = targetX - position.x
     const dy = targetY - position.y
     setDirection(chooseDirection(dx, dy))

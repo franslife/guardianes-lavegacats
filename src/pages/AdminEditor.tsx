@@ -100,12 +100,12 @@ function DraggablePin({ elementId, x, y, type, label, isSelected, onSelect, onMo
       {type === 'zone_pin' ? (
         <div
           style={{
-            width: 46,
-            height: 46,
+            width: 42,
+            height: 42,
             borderRadius: '50%',
-            background: 'rgba(255,255,255,0.86)',
-            border: isSelected ? '3px solid white' : '2px solid rgba(61,46,31,0.55)',
-            boxShadow: isSelected ? `0 0 0 3px ${color}, 0 8px 18px rgba(0,0,0,0.45)` : '0 4px 14px rgba(0,0,0,0.35)',
+            background: 'rgba(255,255,255,0.75)',
+            border: isSelected ? '2px solid white' : '1px solid rgba(61,46,31,0.45)',
+            boxShadow: isSelected ? `0 0 0 2px ${color}, 0 6px 14px rgba(0,0,0,0.4)` : '0 3px 10px rgba(0,0,0,0.3)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
