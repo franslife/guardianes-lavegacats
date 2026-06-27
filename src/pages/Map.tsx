@@ -91,7 +91,7 @@ export default function Map() {
                   transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
                 >
                   <img
-                    src="/ui/zone-pin.svg"
+                    src="/ui/zone-pin.png"
                     alt=""
                     className={`w-10 h-10 md:w-12 md:h-12 drop-shadow-lg ${
                       !zone.playable ? 'opacity-50 grayscale' : ''

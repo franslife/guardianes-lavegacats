@@ -25,7 +25,7 @@ const CHAR_PREFIX: Record<CharacterId, string> = {
 }
 
 export default function Character({ characterId, direction = 'front', isMoving = false, size = 64 }: Props) {
-  const src = `/characters/${CHAR_PREFIX[characterId]}-${DIR_SUFFIX[direction]}.webp`
+  const src = `/characters/${CHAR_PREFIX[characterId]}-${DIR_SUFFIX[direction]}.png`
   const height = Math.round(size * (2528 / 1696))
 
   return (
