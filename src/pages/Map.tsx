@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import { useGameStore } from '../store/gameStore'
 import { useCharacterMovement } from '../hooks/useCharacterMovement'
+import { usePositions } from '../hooks/usePositions'
 import Character from '../components/game/Character'
 import ZonePanel from '../components/ui/ZonePanel'
 import Hud from '../components/ui/Hud'
@@ -25,24 +26,24 @@ export default function Map() {
   const characterId = useGameStore((s) => s.characterId)
   const missionsCompleted = useGameStore((s) => s.missionsCompleted)
   const isMobile = useIsMobile()
+  const viewport = isMobile ? 'mobile' : 'desktop'
+  const { getCoords } = usePositions()
   const [selectedZone, setSelectedZone] = useState<Zone | null>(null)
 
-  const startPos = isMobile ? { x: 0.48, y: 0.35 } : { x: 0.47, y: 0.50 }
-  const { position, direction, isMoving, moveTo } = useCharacterMovement(startPos)
+  const spawnCoords = getCoords('map_character_spawn', viewport)
+  const { position, direction, isMoving, moveTo } = useCharacterMovement(spawnCoords)
 
   if (!characterId) {
     navigate('/select')
     return null
   }
 
-  function getPos(zone: Zone) {
-    return isMobile
-      ? (zone as any).mapPositionMobile ?? zone.mapPosition
-      : zone.mapPosition
+  function getZonePos(zone: Zone) {
+    return getCoords(zone.id, viewport)
   }
 
   function handleZoneClick(zone: Zone) {
-    const pos = getPos(zone)
+    const pos = getZonePos(zone)
     moveTo(pos.x, pos.y, () => setSelectedZone(zone))
   }
 
@@ -71,7 +72,7 @@ export default function Map() {
           {/* Pines de zona — posicionados sobre la imagen */}
           {zonesData.map((zone) => {
             const completed = missionsCompleted.includes(zone.id)
-            const pos = getPos(zone)
+            const pos = getZonePos(zone)
             return (
               <motion.button
                 key={zone.id}

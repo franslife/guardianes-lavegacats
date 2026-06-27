@@ -1,0 +1,231 @@
+{
+  "catio2": {
+    "type": "zone_pin",
+    "label": "Catio 2",
+    "desktop": { "x": 0.18, "y": 0.42 },
+    "mobile":  { "x": 0.27, "y": 0.20 }
+  },
+  "zona_relax": {
+    "type": "zone_pin",
+    "label": "Zona Relax",
+    "desktop": { "x": 0.73, "y": 0.32 },
+    "mobile":  { "x": 0.73, "y": 0.13 }
+  },
+  "enfermeria": {
+    "type": "zone_pin",
+    "label": "Enfermería",
+    "desktop": { "x": 0.47, "y": 0.57 },
+    "mobile":  { "x": 0.48, "y": 0.45 }
+  },
+  "comedor": {
+    "type": "zone_pin",
+    "label": "Comedor",
+    "desktop": { "x": 0.73, "y": 0.65 },
+    "mobile":  { "x": 0.68, "y": 0.63 }
+  },
+  "jardines": {
+    "type": "zone_pin",
+    "label": "Jardines",
+    "desktop": { "x": 0.30, "y": 0.75 },
+    "mobile":  { "x": 0.28, "y": 0.58 }
+  },
+  "casa_azul": {
+    "type": "zone_pin",
+    "label": "Casa Azul",
+    "desktop": { "x": 0.10, "y": 0.82 },
+    "mobile":  { "x": 0.27, "y": 0.80 }
+  },
+  "caravana": {
+    "type": "zone_pin",
+    "label": "Caravana",
+    "desktop": { "x": 0.73, "y": 0.85 },
+    "mobile":  { "x": 0.68, "y": 0.82 }
+  },
+  "catio1": {
+    "type": "zone_pin",
+    "label": "Catio 1",
+    "desktop": { "x": 0.47, "y": 0.17 },
+    "mobile":  { "x": 0.48, "y": 0.03 }
+  },
+
+  "map_character_spawn": {
+    "type": "character_spawn",
+    "label": "Spawn mapa principal",
+    "zone": "map",
+    "desktop": { "x": 0.47, "y": 0.50 },
+    "mobile":  { "x": 0.48, "y": 0.35 }
+  },
+
+  "catio2_hotspot_1": {
+    "type": "hotspot",
+    "label": "Arenero 1",
+    "zone": "catio2",
+    "desktop": { "x": 0.22, "y": 0.38 },
+    "mobile":  { "x": 0.22, "y": 0.38 }
+  },
+  "catio2_hotspot_2": {
+    "type": "hotspot",
+    "label": "Arenero 2",
+    "zone": "catio2",
+    "desktop": { "x": 0.60, "y": 0.38 },
+    "mobile":  { "x": 0.60, "y": 0.38 }
+  },
+  "catio2_hotspot_3": {
+    "type": "hotspot",
+    "label": "Arenero 3",
+    "zone": "catio2",
+    "desktop": { "x": 0.22, "y": 0.65 },
+    "mobile":  { "x": 0.22, "y": 0.65 }
+  },
+  "catio2_hotspot_4": {
+    "type": "hotspot",
+    "label": "Arenero 4",
+    "zone": "catio2",
+    "desktop": { "x": 0.60, "y": 0.65 },
+    "mobile":  { "x": 0.60, "y": 0.65 }
+  },
+  "catio2_spawn": {
+    "type": "character_spawn",
+    "label": "Spawn Catio 2",
+    "zone": "catio2",
+    "desktop": { "x": 0.50, "y": 0.85 },
+    "mobile":  { "x": 0.50, "y": 0.85 }
+  },
+
+  "comedor_hotspot_1": {
+    "type": "hotspot",
+    "label": "Comedero 1",
+    "zone": "comedor",
+    "desktop": { "x": 0.20, "y": 0.45 },
+    "mobile":  { "x": 0.20, "y": 0.45 }
+  },
+  "comedor_hotspot_2": {
+    "type": "hotspot",
+    "label": "Comedero 2",
+    "zone": "comedor",
+    "desktop": { "x": 0.45, "y": 0.45 },
+    "mobile":  { "x": 0.45, "y": 0.45 }
+  },
+  "comedor_hotspot_3": {
+    "type": "hotspot",
+    "label": "Comedero 3",
+    "zone": "comedor",
+    "desktop": { "x": 0.70, "y": 0.45 },
+    "mobile":  { "x": 0.70, "y": 0.45 }
+  },
+  "comedor_hotspot_4": {
+    "type": "hotspot",
+    "label": "Comedero 4",
+    "zone": "comedor",
+    "desktop": { "x": 0.45, "y": 0.68 },
+    "mobile":  { "x": 0.45, "y": 0.68 }
+  },
+  "comedor_spawn": {
+    "type": "character_spawn",
+    "label": "Spawn Comedor",
+    "zone": "comedor",
+    "desktop": { "x": 0.50, "y": 0.85 },
+    "mobile":  { "x": 0.50, "y": 0.85 }
+  },
+
+  "zona_relax_hotspot_1": {
+    "type": "hotspot",
+    "label": "Bebedero 1",
+    "zone": "zona_relax",
+    "desktop": { "x": 0.22, "y": 0.42 },
+    "mobile":  { "x": 0.22, "y": 0.42 }
+  },
+  "zona_relax_hotspot_2": {
+    "type": "hotspot",
+    "label": "Bebedero 2",
+    "zone": "zona_relax",
+    "desktop": { "x": 0.50, "y": 0.42 },
+    "mobile":  { "x": 0.50, "y": 0.42 }
+  },
+  "zona_relax_hotspot_3": {
+    "type": "hotspot",
+    "label": "Bebedero 3",
+    "zone": "zona_relax",
+    "desktop": { "x": 0.75, "y": 0.42 },
+    "mobile":  { "x": 0.75, "y": 0.42 }
+  },
+  "zona_relax_hotspot_4": {
+    "type": "hotspot",
+    "label": "Bebedero 4",
+    "zone": "zona_relax",
+    "desktop": { "x": 0.50, "y": 0.65 },
+    "mobile":  { "x": 0.50, "y": 0.65 }
+  },
+  "zona_relax_spawn": {
+    "type": "character_spawn",
+    "label": "Spawn Zona Relax",
+    "zone": "zona_relax",
+    "desktop": { "x": 0.50, "y": 0.85 },
+    "mobile":  { "x": 0.50, "y": 0.85 }
+  },
+
+  "enfermeria_hotspot_1": {
+    "type": "hotspot",
+    "label": "Gato recuperación 1",
+    "zone": "enfermeria",
+    "desktop": { "x": 0.25, "y": 0.48 },
+    "mobile":  { "x": 0.25, "y": 0.48 }
+  },
+  "enfermeria_hotspot_2": {
+    "type": "hotspot",
+    "label": "Gato recuperación 2",
+    "zone": "enfermeria",
+    "desktop": { "x": 0.50, "y": 0.35 },
+    "mobile":  { "x": 0.50, "y": 0.35 }
+  },
+  "enfermeria_hotspot_3": {
+    "type": "hotspot",
+    "label": "Gato recuperación 3",
+    "zone": "enfermeria",
+    "desktop": { "x": 0.75, "y": 0.48 },
+    "mobile":  { "x": 0.75, "y": 0.48 }
+  },
+  "enfermeria_spawn": {
+    "type": "character_spawn",
+    "label": "Spawn Enfermería",
+    "zone": "enfermeria",
+    "desktop": { "x": 0.50, "y": 0.85 },
+    "mobile":  { "x": 0.50, "y": 0.85 }
+  },
+
+  "jardines_hotspot_1": {
+    "type": "hotspot",
+    "label": "Gato escondido 1",
+    "zone": "jardines",
+    "desktop": { "x": 0.20, "y": 0.40 },
+    "mobile":  { "x": 0.20, "y": 0.40 }
+  },
+  "jardines_hotspot_2": {
+    "type": "hotspot",
+    "label": "Gato escondido 2",
+    "zone": "jardines",
+    "desktop": { "x": 0.55, "y": 0.30 },
+    "mobile":  { "x": 0.55, "y": 0.30 }
+  },
+  "jardines_hotspot_3": {
+    "type": "hotspot",
+    "label": "Gato escondido 3",
+    "zone": "jardines",
+    "desktop": { "x": 0.25, "y": 0.65 },
+    "mobile":  { "x": 0.25, "y": 0.65 }
+  },
+  "jardines_hotspot_4": {
+    "type": "hotspot",
+    "label": "Gato escondido 4",
+    "zone": "jardines",
+    "desktop": { "x": 0.65, "y": 0.60 },
+    "mobile":  { "x": 0.65, "y": 0.60 }
+  },
+  "jardines_spawn": {
+    "type": "character_spawn",
+    "label": "Spawn Jardines",
+    "zone": "jardines",
+    "desktop": { "x": 0.50, "y": 0.85 },
+    "mobile":  { "x": 0.50, "y": 0.85 }
+  }
+}
