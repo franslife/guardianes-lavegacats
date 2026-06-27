@@ -1,0 +1,20 @@
+[
+  {
+    "id": "volunteer_f",
+    "name": "Voluntaria",
+    "description": "Mujer joven, camiseta de La Vega Cats",
+    "sprite": "/characters/volunteer_f"
+  },
+  {
+    "id": "volunteer_m",
+    "name": "Voluntario",
+    "description": "Hombre joven, chaleco de La Vega Cats",
+    "sprite": "/characters/volunteer_m"
+  },
+  {
+    "id": "volunteer_n",
+    "name": "Personaje neutro",
+    "description": "Inclusivo, estilo fantástico amable",
+    "sprite": "/characters/volunteer_n"
+  }
+]

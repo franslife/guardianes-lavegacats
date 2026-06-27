@@ -1,0 +1,37 @@
+[
+  {
+    "id": "clean_litter",
+    "zoneId": "catio2",
+    "taskStates": ["sucio", "limpiando", "limpio"],
+    "icon": "shovel",
+    "sfx": "shovel"
+  },
+  {
+    "id": "feed",
+    "zoneId": "comedor",
+    "taskStates": ["vacío", "vertiendo", "lleno"],
+    "icon": "bowl",
+    "sfx": "kibble"
+  },
+  {
+    "id": "water",
+    "zoneId": "zona_relax",
+    "taskStates": ["turbio", "rellenando", "cristalino"],
+    "icon": "drop",
+    "sfx": "water"
+  },
+  {
+    "id": "care",
+    "zoneId": "enfermeria",
+    "taskStates": ["decaído", "caricia", "feliz"],
+    "icon": "hand",
+    "sfx": "purr"
+  },
+  {
+    "id": "find_cats",
+    "zoneId": "jardines",
+    "taskStates": ["oculto", "moviéndose", "encontrado"],
+    "icon": "search",
+    "sfx": "pop"
+  }
+]

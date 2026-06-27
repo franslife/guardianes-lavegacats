@@ -1,0 +1,93 @@
+[
+  {
+    "id": "catio2",
+    "name": "Catio 2",
+    "playable": true,
+    "mission": {
+      "id": "clean_litter",
+      "title": "Limpiar areneros",
+      "description": "Los gatos del Catio 2 necesitan que sus areneros estén limpios.",
+      "hotspots": 4,
+      "reward_hearts": 20
+    },
+    "mapPosition": { "x": 0.32, "y": 0.45 },
+    "interiorImage": "/zones/catio2-interior.webp"
+  },
+  {
+    "id": "comedor",
+    "name": "Comedor",
+    "playable": true,
+    "mission": {
+      "id": "feed",
+      "title": "Alimentar a los gatos",
+      "description": "Los comederos están vacíos. ¡Hora de llenar tripas!",
+      "hotspots": 4,
+      "reward_hearts": 20
+    },
+    "mapPosition": { "x": 0.78, "y": 0.62 },
+    "interiorImage": "/zones/comedor-interior.webp"
+  },
+  {
+    "id": "zona_relax",
+    "name": "Zona Relax",
+    "playable": true,
+    "mission": {
+      "id": "water",
+      "title": "Dar agua",
+      "description": "Los bebederos están turbios. ¡Toca renovar el agua!",
+      "hotspots": 4,
+      "reward_hearts": 20
+    },
+    "mapPosition": { "x": 0.55, "y": 0.30 },
+    "interiorImage": "/zones/relax-interior.webp"
+  },
+  {
+    "id": "enfermeria",
+    "name": "Enfermería",
+    "playable": true,
+    "mission": {
+      "id": "care",
+      "title": "Mimos y cuidados",
+      "description": "Los gatos en recuperación necesitan tu cariño.",
+      "hotspots": 3,
+      "reward_hearts": 20
+    },
+    "mapPosition": { "x": 0.68, "y": 0.38 },
+    "interiorImage": "/zones/enfermeria-interior.webp"
+  },
+  {
+    "id": "jardines",
+    "name": "Jardines",
+    "playable": true,
+    "mission": {
+      "id": "find_cats",
+      "title": "Encontrar gatos escondidos",
+      "description": "Algunos gatos curiosos se han escondido entre los arbustos.",
+      "hotspots": 4,
+      "reward_hearts": 20
+    },
+    "mapPosition": { "x": 0.42, "y": 0.68 },
+    "interiorImage": "/zones/jardines-interior.webp"
+  },
+  {
+    "id": "casa_azul",
+    "name": "Casa Azul",
+    "playable": false,
+    "comingSoon": true,
+    "mapPosition": { "x": 0.22, "y": 0.78 }
+  },
+  {
+    "id": "caravana",
+    "name": "Caravana",
+    "playable": false,
+    "comingSoon": true,
+    "mapPosition": { "x": 0.15, "y": 0.55 }
+  },
+  {
+    "id": "catio1",
+    "name": "Catio 1",
+    "playable": false,
+    "comingSoon": true,
+    "mapPosition": { "x": 0.88, "y": 0.30 }
+  }
+]

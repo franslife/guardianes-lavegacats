@@ -1,0 +1,26 @@
+@import "tailwindcss";
+
+:root {
+  --color-cream: #F5EBD8;
+  --color-green: #7BA577;
+  --color-terracota: #E07856;
+  --color-brown: #3D2E1F;
+  --color-pink: #F4A89B;
+  --color-yellow: #F7D87C;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--color-cream);
+  color: var(--color-brown);
+  font-family: 'Nunito', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  min-height: 100dvh;
+}

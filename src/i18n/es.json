@@ -1,0 +1,30 @@
+{
+  "splash.welcome": "Bienvenido/a a La Vega Cats",
+  "splash.subtitle": "Hoy haces un turno de voluntario virtual",
+  "splash.cta": "Entrar",
+
+  "character.title": "Elige tu voluntario/a",
+  "character.subtitle": "Hoy ayudas a los gatos del santuario",
+  "character.continue": "Continuar",
+
+  "tutorial.step1": "Toca el pin de cualquier zona para empezar",
+  "tutorial.step2": "Tu personaje irá caminando hasta el lugar",
+  "tutorial.step3": "Completa los puntos brillantes para ayudar a los gatos",
+
+  "zone.start": "Empezar misión",
+  "zone.back": "Volver",
+  "zone.coming_soon": "Próximamente",
+
+  "mission.complete.title": "¡Misión completada!",
+  "mission.complete.continue": "Continuar mi turno",
+
+  "turn.complete.title": "Has completado tu turno de voluntario virtual",
+  "turn.complete.subtitle": "En La Vega Cats hay personas que hacen esto todos los días, de verdad. Los gatos te están esperando.",
+
+  "cta.volunteer.primary": "Quiero ser voluntario/a",
+  "cta.website": "Visitar lavegacats.com",
+  "cta.share": "Compartir mi turno",
+
+  "audio.on": "Sonido activado",
+  "audio.off": "Sonido desactivado"
+}

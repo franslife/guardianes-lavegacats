@@ -1,0 +1,68 @@
+[
+  {
+    "id": "gandalf",
+    "name": "Gandalf",
+    "personality": "Sabio y tranquilo. Muy cariñoso",
+    "zone": "zona_relax",
+    "isReal": true,
+    "portrait": "/cats/gandalf.webp",
+    "sprite": "/cats/gandalf-sprite.webp",
+    "trustLevel": 0,
+    "bio": ""
+  },
+  {
+    "id": "tito",
+    "name": "Tito",
+    "personality": "Siempre busca mimos y comida",
+    "zone": "comedor",
+    "isReal": true,
+    "portrait": "/cats/tito.webp",
+    "sprite": "/cats/tito-sprite.webp",
+    "trustLevel": 0,
+    "bio": ""
+  },
+  {
+    "id": "vainilla",
+    "name": "Vainilla",
+    "personality": "Princesa esponjosa. Disfruta del sol",
+    "zone": "jardines",
+    "isReal": true,
+    "portrait": "/cats/vainilla.webp",
+    "sprite": "/cats/vainilla-sprite.webp",
+    "trustLevel": 0,
+    "bio": ""
+  },
+  {
+    "id": "pepe",
+    "name": "Pepe",
+    "personality": "Independiente y un corazón de oro",
+    "zone": "enfermeria",
+    "isReal": true,
+    "portrait": "/cats/pepe.webp",
+    "sprite": "/cats/pepe-sprite.webp",
+    "trustLevel": 0,
+    "bio": ""
+  },
+  {
+    "id": "sombra",
+    "name": "Sombra",
+    "personality": "Quiere llamar la atención y algo gruñona",
+    "zone": "catio2",
+    "isReal": true,
+    "portrait": "/cats/sombra.webp",
+    "sprite": "/cats/sombra-sprite.webp",
+    "trustLevel": 0,
+    "bio": ""
+  },
+  {
+    "id": "frida",
+    "name": "Frida",
+    "personality": "Curiosa y muy buena amiga de Sombra",
+    "zone": "catio2",
+    "isReal": true,
+    "portrait": "/cats/frida.webp",
+    "sprite": "/cats/frida-sprite.webp",
+    "trustLevel": 0,
+    "bio": ""
+  }
+]
