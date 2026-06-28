@@ -33,6 +33,14 @@ const ZONE_TASK_IMAGES: Record<string, TaskImages> = {
   jardines:   { before: '/tasks/find-hidden.png',   during: '/tasks/find-moving.png',     after: '/tasks/find-found.png' },
 }
 
+const ZONE_NARRATION_KEYS: Record<string, string> = {
+  catio2:     'clean_litter',
+  comedor:    'feed',
+  zona_relax: 'give_water',
+  enfermeria: 'care',
+  jardines:   'find',
+}
+
 const ZONE_TASK_TITLES: Record<string, string> = {
   catio2:     'Limpia los areneros',
   comedor:    'Alimenta a los gatos',
@@ -274,6 +282,7 @@ export default function ZoneInterior() {
           title={taskTitle}
           reward={activeTask.reward}
           longTask={isLongTask}
+          narrationKey={ZONE_NARRATION_KEYS[zoneId ?? '']}
           onComplete={() => handleTaskComplete(activeTask.hotspotId, activeTask.reward)}
           onClose={() => {
             // Early close: mark as done immediately

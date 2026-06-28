@@ -1,0 +1,87 @@
+{
+  "clean_litter": {
+    "before": [
+      "Este arenero pide a gritos un repaso.",
+      "Alguien ha estado ocupado aquí…",
+      "Manos a la obra: a por la pala."
+    ],
+    "during": [
+      "Limpieza en marcha. Sin prisa pero sin pausa.",
+      "Removiendo, recogiendo, dejando todo bonito.",
+      "Los gatos lo van a agradecer."
+    ],
+    "after": [
+      "Como nuevo. Listo para la próxima visita.",
+      "Brillante. Hasta los gatos asentirían.",
+      "Misión cumplida. Otro arenero feliz."
+    ]
+  },
+  "feed": {
+    "before": [
+      "Tripas vacías por aquí…",
+      "Tenemos clientela esperando.",
+      "Hora del banquete."
+    ],
+    "during": [
+      "Llenando comedero. Hueles las croquetas desde aquí.",
+      "Servicio en marcha. Con cariño.",
+      "Esto va a ser un éxito de público."
+    ],
+    "after": [
+      "Comedero lleno, corazones llenos.",
+      "Buen provecho, peludos.",
+      "Si pudieran aplaudir, lo harían."
+    ]
+  },
+  "give_water": {
+    "before": [
+      "Esta agua ha visto cosas. Hora de cambiarla.",
+      "Un agua fresquita le sienta bien a cualquiera.",
+      "Renovando el bebedero."
+    ],
+    "during": [
+      "Agua nueva, agua buena.",
+      "Llenando con calma.",
+      "Los gatos del santuario merecen lo mejor."
+    ],
+    "after": [
+      "Cristalina. Lista para sed gatuna.",
+      "Hidratación garantizada por hoy.",
+      "Como un manantial. Bueno, casi."
+    ]
+  },
+  "care": {
+    "before": [
+      "Alguien necesita un poquito de cariño.",
+      "Hoy toca cuidar de los que más lo necesitan.",
+      "Aquí hay un peludo pidiendo mimos."
+    ],
+    "during": [
+      "Caricias suaves. Sin prisa, todo el tiempo del mundo.",
+      "A veces lo más importante es estar.",
+      "Un mimo cura más de lo que parece."
+    ],
+    "after": [
+      "Ronroneo nivel máximo. Todo va a estar bien.",
+      "Mírale esa carita de felicidad.",
+      "Un poquito más fuerte que antes. Y más querido."
+    ]
+  },
+  "find": {
+    "before": [
+      "Aquí hay alguien escondido… ¿lo ves?",
+      "Algo se mueve entre las hojas.",
+      "Los gatos saben esconderse mejor que nadie."
+    ],
+    "during": [
+      "Acércate con cuidado, no le asustes.",
+      "Casi, casi… asoma una orejita.",
+      "Está saliendo. Despacito."
+    ],
+    "after": [
+      "¡Te encontré! Bienvenido a la luz.",
+      "Mira quién estaba ahí escondido.",
+      "Hola, peludo. Encantado de verte."
+    ]
+  }
+}

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
+import narrations from '../../data/taskNarrations.json'
 
 export interface TaskImages {
   before: string
@@ -8,12 +9,16 @@ export interface TaskImages {
 }
 
 type Phase = 'before' | 'during' | 'after' | 'reward' | 'closing'
+type TextPhase = 'before' | 'during' | 'after'
+
+type NarrationKey = keyof typeof narrations
 
 interface Props {
   images: TaskImages
   title: string
   reward: number
   longTask?: boolean
+  narrationKey?: string
   onComplete: () => void
   onClose: () => void
 }
@@ -25,12 +30,31 @@ const SPARKLE_OFFSETS = [
   { x: '38%', delay: 0.22 },
 ]
 
-export default function TaskModal({ images, title, reward, longTask = false, onComplete, onClose }: Props) {
-  const [phase, setPhase] = useState<Phase>('before')
-  const [sweeping, setSweeping] = useState(false)
-  const prefersReduced = useReducedMotion()
+function pickRandomIndices(key: NarrationKey) {
+  const n = narrations[key]
+  return {
+    before: Math.floor(Math.random() * n.before.length),
+    during: Math.floor(Math.random() * n.during.length),
+    after:  Math.floor(Math.random() * n.after.length),
+  }
+}
 
-  // Preload all 3 images on mount
+export default function TaskModal({
+  images, title, reward, longTask = false,
+  narrationKey, onComplete, onClose,
+}: Props) {
+  const [phase, setPhase]         = useState<Phase>('before')
+  const [textPhase, setTextPhase] = useState<TextPhase>('before')
+  const [sweeping, setSweeping]   = useState(false)
+  const prefersReduced            = useReducedMotion()
+
+  // Pick one random variant per state on mount (stable for this hotspot activation)
+  const validKey = narrationKey && narrationKey in narrations ? (narrationKey as NarrationKey) : null
+  const [variantIdx] = useState(() =>
+    validKey ? pickRandomIndices(validKey) : { before: 0, during: 0, after: 0 }
+  )
+
+  // Preload all 3 task images immediately
   useEffect(() => {
     [images.before, images.during, images.after].forEach((src) => {
       const img = new window.Image()
@@ -39,11 +63,13 @@ export default function TaskModal({ images, title, reward, longTask = false, onC
   }, [])
 
   // Timing config (ms)
-  const beforeMs  = prefersReduced ? 800  : 2000
-  const duringMs  = longTask ? (prefersReduced ? 1500 : 4000) : (prefersReduced ? 1000 : 3000)
-  const afterMs   = prefersReduced ? 800  : 2000
-  const rewardMs  = prefersReduced ? 800  : 2000
-  const sweepMs   = prefersReduced ? 0    : 800
+  const beforeMs = prefersReduced ? 800  : 2000
+  const duringMs = longTask ? (prefersReduced ? 1500 : 4000) : (prefersReduced ? 1000 : 3000)
+  const afterMs  = prefersReduced ? 800  : 2000
+  const rewardMs = prefersReduced ? 800  : 2000
+  const sweepMs  = prefersReduced ? 0    : 800
+  // text lags 200ms behind image (0ms if reduced motion)
+  const textLag  = prefersReduced ? 0    : 200
 
   useEffect(() => {
     const timers: ReturnType<typeof setTimeout>[] = []
@@ -51,11 +77,13 @@ export default function TaskModal({ images, title, reward, longTask = false, onC
     // before → during
     timers.push(setTimeout(() => { setPhase('during'); if (!prefersReduced) setSweeping(true) }, beforeMs))
     if (!prefersReduced) timers.push(setTimeout(() => setSweeping(false), beforeMs + sweepMs))
+    timers.push(setTimeout(() => setTextPhase('during'), beforeMs + textLag))
 
     // during → after
     const t2 = beforeMs + duringMs
     timers.push(setTimeout(() => { setPhase('after'); if (!prefersReduced) setSweeping(true) }, t2))
     if (!prefersReduced) timers.push(setTimeout(() => setSweeping(false), t2 + sweepMs))
+    timers.push(setTimeout(() => setTextPhase('after'), t2 + textLag))
 
     // after → reward
     timers.push(setTimeout(() => setPhase('reward'), t2 + afterMs))
@@ -70,6 +98,10 @@ export default function TaskModal({ images, title, reward, longTask = false, onC
     phase === 'before' ? images.before :
     phase === 'during' ? images.during :
     images.after
+
+  const narrationText = validKey
+    ? narrations[validKey][textPhase][variantIdx[textPhase]]
+    : null
 
   return (
     <motion.div
@@ -89,11 +121,10 @@ export default function TaskModal({ images, title, reward, longTask = false, onC
         animate={{ scale: 1, opacity: 1, y: 0 }}
         transition={{ type: 'spring', damping: 22, stiffness: 280, delay: 0.05 }}
       >
-        {/* ── Golden sweep overlay (z above image, below close btn) ── */}
+        {/* ── Golden sweep overlay ── */}
         <AnimatePresence>
           {sweeping && (
             <>
-              {/* Main sweep band */}
               <motion.div
                 key="sweep"
                 className="absolute inset-0 z-[15] pointer-events-none"
@@ -104,8 +135,6 @@ export default function TaskModal({ images, title, reward, longTask = false, onC
                 animate={{ x: '120%' }}
                 transition={{ duration: sweepMs / 1000, ease: 'easeInOut' }}
               />
-
-              {/* Sparkles rising during sweep */}
               {SPARKLE_OFFSETS.map(({ x, delay }, i) => (
                 <motion.div
                   key={`spark-${i}`}
@@ -120,7 +149,7 @@ export default function TaskModal({ images, title, reward, longTask = false, onC
           )}
         </AnimatePresence>
 
-        {/* Close button — z above sweep */}
+        {/* Close button */}
         <button
           onClick={() => { setPhase('closing'); onClose() }}
           className="absolute top-3 right-3 z-20 w-8 h-8 flex items-center justify-center rounded-full bg-[#3D2E1F]/10 text-[#3D2E1F]/40 text-xl font-bold hover:bg-[#3D2E1F]/20 transition-colors"
@@ -133,18 +162,21 @@ export default function TaskModal({ images, title, reward, longTask = false, onC
           <p className="text-lg font-extrabold text-[#3D2E1F] leading-tight">{title}</p>
         </div>
 
-        {/* Image area — explicit cream bg prevents checkered on transparency */}
+        {/* Image area */}
         <div
-          className="relative w-full flex items-center justify-center px-6 pb-6"
-          style={{ minHeight: 220, background: '#FAF5EC' }}
+          className="relative w-full flex items-center justify-center px-4"
+          style={{ background: '#FAF5EC' }}
         >
           <AnimatePresence mode="sync">
             <motion.img
               key={imgSrc}
               src={imgSrc}
               alt={title}
-              className="max-h-[50dvh] w-full object-contain"
-              style={{ background: 'transparent' }}
+              className="w-full object-contain"
+              style={{
+                background: 'transparent',
+                maxHeight: 'min(42vh, 260px)',
+              }}
               initial={{ opacity: 0 }}
               animate={
                 phase === 'during' && !prefersReduced
@@ -164,11 +196,11 @@ export default function TaskModal({ images, title, reward, longTask = false, onC
             />
           </AnimatePresence>
 
-          {/* Reward overlay — hearts float up */}
+          {/* Reward overlay — hearts float up inside image area */}
           <AnimatePresence>
             {phase === 'reward' && (
               <motion.div
-                className="absolute inset-0 flex flex-col items-center justify-end pb-5 pointer-events-none"
+                className="absolute inset-0 flex flex-col items-center justify-end pb-3 pointer-events-none"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
@@ -201,6 +233,31 @@ export default function TaskModal({ images, title, reward, longTask = false, onC
             )}
           </AnimatePresence>
         </div>
+
+        {/* Narration text block — always reserve space to avoid modal jump */}
+        {narrationText !== null && (
+          <div
+            className="w-full flex items-center justify-center px-3 sm:px-4 md:px-6 lg:px-8 pt-4 pb-5"
+            style={{ minHeight: 'clamp(65px, 15vw, 80px)' }}
+          >
+            <AnimatePresence mode="wait">
+              <motion.p
+                key={textPhase}
+                className="text-center italic text-[#3D2E1F]/80 font-medium leading-[1.45]"
+                style={{
+                  fontSize: 'clamp(15px, 4.2vw, 22px)',
+                  maxWidth: 'min(95%, 560px)',
+                }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3, ease: 'easeInOut' }}
+              >
+                {narrationText}
+              </motion.p>
+            </AnimatePresence>
+          </div>
+        )}
       </motion.div>
     </motion.div>
   )
