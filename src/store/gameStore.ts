@@ -1,7 +1,19 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import { useNotifStore } from './notifStore'
 
 type CharacterId = 'volunteer_f' | 'volunteer_m' | 'volunteer_n'
+
+// Which cats gain trust when a zone mission is completed
+const ZONE_CATS: Record<string, string[]> = {
+  zona_relax: ['gandalf'],
+  comedor: ['tito'],
+  jardines: ['vainilla'],
+  enfermeria: ['pepe'],
+  catio2: ['sombra', 'frida'],
+}
+
+const ALL_CATS = ['gandalf', 'tito', 'vainilla', 'pepe', 'sombra', 'frida']
 
 interface GameState {
   anonymousId: string
@@ -9,7 +21,6 @@ interface GameState {
   hearts: number
   level: number
   missionsCompleted: string[]
-  // zoneId → array of completed hotspot IDs
   hotspotsCompleted: Record<string, string[]>
   turnsCompleted: number
   medals: string[]
@@ -60,7 +71,10 @@ export const useGameStore = create<GameState>()(
           const prev = s.hotspotsCompleted[zoneId] ?? []
           if (prev.includes(hotspotId)) return {}
           const medals = [...s.medals]
-          if (!medals.includes('primer_cuidado')) medals.push('primer_cuidado')
+          if (!medals.includes('primer_cuidado')) {
+            medals.push('primer_cuidado')
+            useNotifStore.getState().push({ type: 'medal', id: 'primer_cuidado' })
+          }
           return {
             hotspotsCompleted: { ...s.hotspotsCompleted, [zoneId]: [...prev, hotspotId] },
             medals,
@@ -69,18 +83,47 @@ export const useGameStore = create<GameState>()(
 
       completeMission: (zoneId) =>
         set((s) => {
-          const missions = s.missionsCompleted.includes(zoneId)
-            ? s.missionsCompleted
-            : [...s.missionsCompleted, zoneId]
+          if (s.missionsCompleted.includes(zoneId)) return {}
+
+          const missions = [...s.missionsCompleted, zoneId]
           const medals = [...s.medals]
-          if (!medals.includes('cuidador_atento')) medals.push('cuidador_atento')
-          return { missionsCompleted: missions, medals }
+
+          if (!medals.includes('cuidador_atento')) {
+            medals.push('cuidador_atento')
+            useNotifStore.getState().push({ type: 'medal', id: 'cuidador_atento' })
+          }
+
+          // Cat trust
+          const catTrust = { ...s.catTrust }
+          let biosUnlocked = [...s.biosUnlocked]
+
+          for (const catId of ZONE_CATS[zoneId] ?? []) {
+            const current = catTrust[catId] ?? 0
+            const newTrust = Math.min(current + 1, 5)
+            catTrust[catId] = newTrust
+
+            if (newTrust >= 5 && !biosUnlocked.includes(catId)) {
+              biosUnlocked.push(catId)
+              useNotifStore.getState().push({ type: 'bio', catId })
+
+              // Guardian medal: all bios unlocked
+              if (ALL_CATS.every((c) => biosUnlocked.includes(c)) && !medals.includes('guardian')) {
+                medals.push('guardian')
+                useNotifStore.getState().push({ type: 'medal', id: 'guardian' })
+              }
+            }
+          }
+
+          return { missionsCompleted: missions, medals, catTrust, biosUnlocked }
         }),
 
       completeTurn: () =>
         set((s) => {
           const medals = [...s.medals]
-          if (!medals.includes('turno_completo')) medals.push('turno_completo')
+          if (!medals.includes('turno_completo')) {
+            medals.push('turno_completo')
+            useNotifStore.getState().push({ type: 'medal', id: 'turno_completo' })
+          }
           return {
             turnsCompleted: s.turnsCompleted + 1,
             missionsCompleted: [],
@@ -91,15 +134,14 @@ export const useGameStore = create<GameState>()(
 
       unlockBio: (catId) =>
         set((s) => {
-          const bios = s.biosUnlocked.includes(catId)
-            ? s.biosUnlocked
-            : [...s.biosUnlocked, catId]
-          const allCats = ['gandalf', 'tito', 'vainilla', 'pepe', 'sombra', 'frida']
+          if (s.biosUnlocked.includes(catId)) return {}
+          const biosUnlocked = [...s.biosUnlocked, catId]
           const medals = [...s.medals]
-          if (allCats.every((c) => bios.includes(c)) && !medals.includes('guardian')) {
+          if (ALL_CATS.every((c) => biosUnlocked.includes(c)) && !medals.includes('guardian')) {
             medals.push('guardian')
+            useNotifStore.getState().push({ type: 'medal', id: 'guardian' })
           }
-          return { biosUnlocked: bios, medals }
+          return { biosUnlocked, medals }
         }),
 
       increaseCatTrust: (catId) =>
@@ -110,6 +152,7 @@ export const useGameStore = create<GameState>()(
           let biosUnlocked = [...s.biosUnlocked]
           if (newTrust >= 5 && !biosUnlocked.includes(catId)) {
             biosUnlocked.push(catId)
+            useNotifStore.getState().push({ type: 'bio', catId })
           }
           return { catTrust, biosUnlocked }
         }),

@@ -92,6 +92,15 @@ export default function ZoneInterior() {
   const [lastHearts, setLastHearts] = useState(0)
   const [showMissionComplete, setShowMissionComplete] = useState(false)
   const [heartsEarned, setHeartsEarned] = useState(0)
+  const [missionNewMedals, setMissionNewMedals] = useState<string[]>([])
+  const [missionCatGains, setMissionCatGains] = useState<Array<{ catId: string; newTrust: number; bioUnlocked: boolean }>>([])
+
+  // Zone-to-cats mapping (mirrors gameStore)
+  const ZONE_CATS: Record<string, string[]> = {
+    zona_relax: ['gandalf'], comedor: ['tito'],
+    jardines: ['vainilla'], enfermeria: ['pepe'],
+    catio2: ['sombra', 'frida'],
+  }
 
   const spawnId = `${zoneId}_spawn`
   const spawnCoords = getCoords(spawnId, viewport)
@@ -127,7 +136,27 @@ export default function ZoneInterior() {
           if (allDone && zoneId) {
             const totalReward = zone?.mission?.reward_hearts ?? 20
             setHeartsEarned(totalReward)
+
+            // Snapshot before completeMission mutates the store
+            const prevMedals = useGameStore.getState().medals
+            const prevBios = useGameStore.getState().biosUnlocked
+            const prevTrust = { ...useGameStore.getState().catTrust }
+
             completeMission(zoneId)
+
+            // Compute what changed
+            const nextMedals = useGameStore.getState().medals
+            const nextBios = useGameStore.getState().biosUnlocked
+            const nextTrust = useGameStore.getState().catTrust
+            setMissionNewMedals(nextMedals.filter((m) => !prevMedals.includes(m)))
+
+            const gains = (ZONE_CATS[zoneId] ?? []).map((catId) => ({
+              catId,
+              newTrust: nextTrust[catId] ?? 0,
+              bioUnlocked: !prevBios.includes(catId) && nextBios.includes(catId),
+            })).filter(({ newTrust }) => newTrust > (prevTrust[newTrust] ?? 0) || true)
+            setMissionCatGains(gains)
+
             setTimeout(() => setShowMissionComplete(true), 800)
           }
           return updated
@@ -240,6 +269,8 @@ export default function ZoneInterior() {
           zoneName={zone.name}
           heartsEarned={heartsEarned}
           level={level}
+          newMedals={missionNewMedals}
+          catGains={missionCatGains}
           onContinue={() => navigate('/map')}
         />
       )}
