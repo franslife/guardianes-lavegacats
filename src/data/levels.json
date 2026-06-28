@@ -1,0 +1,8 @@
+[
+  { "level": 1, "name": "Visitante curioso/a",      "missionsRequired": 0 },
+  { "level": 2, "name": "Voluntario/a novato/a",     "missionsRequired": 1 },
+  { "level": 3, "name": "Voluntario/a querido/a",    "missionsRequired": 2 },
+  { "level": 4, "name": "Guardián experto/a",        "missionsRequired": 3 },
+  { "level": 5, "name": "Maestro/a del santuario",   "missionsRequired": 4 },
+  { "level": 6, "name": "Alma querida protectora",   "missionsRequired": 5, "isFinal": true }
+]

@@ -1,17 +1,27 @@
 import { create } from 'zustand'
 import { useNotifStore } from './notifStore'
+import levelsData from '../data/levels.json'
 
 type CharacterId = 'volunteer_f' | 'volunteer_m' | 'volunteer_n'
 
 const ZONE_CATS: Record<string, string[]> = {
   zona_relax: ['gandalf'],
-  comedor: ['tito'],
-  jardines: ['vainilla'],
+  comedor:    ['tito'],
+  jardines:   ['vainilla'],
   enfermeria: ['pepe'],
-  catio2: ['sombra', 'frida'],
+  catio2:     ['sombra', 'frida'],
 }
 
 const ALL_CATS = ['gandalf', 'tito', 'vainilla', 'pepe', 'sombra', 'frida']
+
+// Which zone unlocks after completing each playable zone
+const UNLOCK_CHAIN: Record<string, string> = {
+  comedor:    'catio2',
+  catio2:     'zona_relax',
+  zona_relax: 'jardines',
+  jardines:   'enfermeria',
+  // enfermeria has no successor → end of turn
+}
 
 function getSessionId(): string {
   const key = 'guardianes-session-id'
@@ -22,47 +32,48 @@ function getSessionId(): string {
   return fresh
 }
 
+function levelFromMissions(count: number): number {
+  return Math.min(count + 1, 6)
+}
+
 const INITIAL_STATE = {
-  anonymousId: getSessionId(),
-  characterId: null as CharacterId | null,
-  hearts: 0,
-  level: 1,
+  anonymousId:       getSessionId(),
+  characterId:       null as CharacterId | null,
+  hearts:            0,
+  level:             1,
   missionsCompleted: [] as string[],
   hotspotsCompleted: {} as Record<string, string[]>,
-  turnsCompleted: 0,
-  medals: [] as string[],
-  catTrust: {} as Record<string, number>,
-  biosUnlocked: [] as string[],
+  turnsCompleted:    0,
+  medals:            [] as string[],
+  catTrust:          {} as Record<string, number>,
+  biosUnlocked:      [] as string[],
+  unlockedZones:     ['comedor'] as string[],
+  justUnlockedZone:  null as string | null,
 }
 
 interface GameState {
-  anonymousId: string
-  characterId: CharacterId | null
-  hearts: number
-  level: number
+  anonymousId:       string
+  characterId:       CharacterId | null
+  hearts:            number
+  level:             number
   missionsCompleted: string[]
   hotspotsCompleted: Record<string, string[]>
-  turnsCompleted: number
-  medals: string[]
-  catTrust: Record<string, number>
-  biosUnlocked: string[]
+  turnsCompleted:    number
+  medals:            string[]
+  catTrust:          Record<string, number>
+  biosUnlocked:      string[]
+  unlockedZones:     string[]
+  justUnlockedZone:  string | null
 
-  setCharacter: (id: CharacterId) => void
-  addHearts: (amount: number) => void
-  markHotspotDone: (zoneId: string, hotspotId: string) => void
-  completeMission: (zoneId: string) => void
-  completeTurn: () => void
-  unlockBio: (catId: string) => void
-  increaseCatTrust: (catId: string) => void
-  resetSession: () => void
-}
-
-function calcLevel(hearts: number): number {
-  if (hearts >= 800) return 5
-  if (hearts >= 400) return 4
-  if (hearts >= 150) return 3
-  if (hearts >= 50) return 2
-  return 1
+  setCharacter:       (id: CharacterId) => void
+  addHearts:          (amount: number) => void
+  markHotspotDone:    (zoneId: string, hotspotId: string) => void
+  completeMission:    (zoneId: string) => void
+  completeTurn:       () => void
+  unlockBio:          (catId: string) => void
+  increaseCatTrust:   (catId: string) => void
+  clearJustUnlocked:  () => void
+  resetSession:       () => void
 }
 
 export const useGameStore = create<GameState>()((set) => ({
@@ -71,10 +82,7 @@ export const useGameStore = create<GameState>()((set) => ({
   setCharacter: (id) => set({ characterId: id }),
 
   addHearts: (amount) =>
-    set((s) => {
-      const newHearts = s.hearts + amount
-      return { hearts: newHearts, level: calcLevel(newHearts) }
-    }),
+    set((s) => ({ hearts: s.hearts + amount })),
 
   markHotspotDone: (zoneId, hotspotId) =>
     set((s) => {
@@ -95,19 +103,29 @@ export const useGameStore = create<GameState>()((set) => ({
     set((s) => {
       if (s.missionsCompleted.includes(zoneId)) return {}
 
-      const missions = [...s.missionsCompleted, zoneId]
-      const medals = [...s.medals]
+      const missions    = [...s.missionsCompleted, zoneId]
+      const newLevel    = levelFromMissions(missions.length)
+      const medals      = [...s.medals]
+      const catTrust    = { ...s.catTrust }
+      let   biosUnlocked = [...s.biosUnlocked]
 
+      // Medal: first zone completion
       if (!medals.includes('cuidador_atento')) {
         medals.push('cuidador_atento')
         useNotifStore.getState().push({ type: 'medal', id: 'cuidador_atento' })
       }
 
-      const catTrust = { ...s.catTrust }
-      let biosUnlocked = [...s.biosUnlocked]
+      // Level-up toast (not for level 6 — that's celebrated in TurnEnd)
+      if (newLevel < 6) {
+        const lvlData = levelsData.find((l) => l.level === newLevel)
+        if (lvlData) {
+          useNotifStore.getState().push({ type: 'levelup', level: newLevel, name: lvlData.name })
+        }
+      }
 
+      // Cat trust
       for (const catId of ZONE_CATS[zoneId] ?? []) {
-        const current = catTrust[catId] ?? 0
+        const current  = catTrust[catId] ?? 0
         const newTrust = Math.min(current + 1, 5)
         catTrust[catId] = newTrust
 
@@ -122,7 +140,22 @@ export const useGameStore = create<GameState>()((set) => ({
         }
       }
 
-      return { missionsCompleted: missions, medals, catTrust, biosUnlocked }
+      // Zone unlock chain
+      const nextZone        = UNLOCK_CHAIN[zoneId]
+      const unlockedZones   = nextZone
+        ? [...new Set([...s.unlockedZones, nextZone])]
+        : [...s.unlockedZones]
+      const justUnlockedZone = nextZone ?? null
+
+      return {
+        missionsCompleted: missions,
+        level:             newLevel,
+        medals,
+        catTrust,
+        biosUnlocked,
+        unlockedZones,
+        justUnlockedZone,
+      }
     }),
 
   completeTurn: () =>
@@ -133,7 +166,7 @@ export const useGameStore = create<GameState>()((set) => ({
         useNotifStore.getState().push({ type: 'medal', id: 'turno_completo' })
       }
       return {
-        turnsCompleted: s.turnsCompleted + 1,
+        turnsCompleted:    s.turnsCompleted + 1,
         missionsCompleted: [],
         hotspotsCompleted: {},
         medals,
@@ -144,7 +177,7 @@ export const useGameStore = create<GameState>()((set) => ({
     set((s) => {
       if (s.biosUnlocked.includes(catId)) return {}
       const biosUnlocked = [...s.biosUnlocked, catId]
-      const medals = [...s.medals]
+      const medals       = [...s.medals]
       if (ALL_CATS.every((c) => biosUnlocked.includes(c)) && !medals.includes('guardian')) {
         medals.push('guardian')
         useNotifStore.getState().push({ type: 'medal', id: 'guardian' })
@@ -154,7 +187,7 @@ export const useGameStore = create<GameState>()((set) => ({
 
   increaseCatTrust: (catId) =>
     set((s) => {
-      const current = s.catTrust[catId] ?? 0
+      const current  = s.catTrust[catId] ?? 0
       const newTrust = Math.min(current + 1, 5)
       const catTrust = { ...s.catTrust, [catId]: newTrust }
       let biosUnlocked = [...s.biosUnlocked]
@@ -165,10 +198,11 @@ export const useGameStore = create<GameState>()((set) => ({
       return { catTrust, biosUnlocked }
     }),
 
+  clearJustUnlocked: () => set({ justUnlockedZone: null }),
+
   resetSession: () => {
-    // Clear old session id and generate a fresh one
     sessionStorage.removeItem('guardianes-session-id')
-    useNotifStore.getState().clear?.()
+    useNotifStore.getState().clear()
     set({ ...INITIAL_STATE, anonymousId: getSessionId() })
   },
 }))

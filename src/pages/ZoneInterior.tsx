@@ -98,7 +98,7 @@ export default function ZoneInterior() {
   const { getCoords, loading: posLoading } = usePositions()
   const {
     anonymousId, characterId, hearts, level,
-    missionsCompleted, hotspotsCompleted,
+    missionsCompleted, hotspotsCompleted, unlockedZones,
     addHearts, markHotspotDone, completeMission,
   } = useGameStore()
 
@@ -128,9 +128,12 @@ export default function ZoneInterior() {
   const spawnCoords = getCoords(spawnId, viewport)
   const { position, direction, isMoving, duration, moveTo } = useCharacterMovement(spawnCoords)
 
+  const [isLastMission, setIsLastMission] = useState(false)
+
   useEffect(() => {
-    if (!zone || !zone.playable) navigate('/map', { replace: true })
-  }, [zone])
+    if (!zone || !zone.playable) { navigate('/map', { replace: true }); return }
+    if (zoneId && !unlockedZones.includes(zoneId)) navigate('/map', { replace: true })
+  }, [zone, unlockedZones])
 
   const handleTaskComplete = useCallback((hotspotId: string, reward: number) => {
     setActiveTask(null)
@@ -150,6 +153,9 @@ export default function ZoneInterior() {
         const prevBios = useGameStore.getState().biosUnlocked
 
         completeMission(zoneId)
+
+        const completedAfter = useGameStore.getState().missionsCompleted
+        if (completedAfter.length >= 5) setIsLastMission(true)
 
         const nextMedals = useGameStore.getState().medals
         const nextBios = useGameStore.getState().biosUnlocked
@@ -299,7 +305,7 @@ export default function ZoneInterior() {
           level={level}
           newMedals={missionNewMedals}
           catGains={missionCatGains}
-          onContinue={() => navigate('/map')}
+          onContinue={() => navigate(isLastMission ? '/end' : '/map')}
         />
       )}
     </div>
