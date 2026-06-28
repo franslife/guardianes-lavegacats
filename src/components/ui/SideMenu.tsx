@@ -1,14 +1,25 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { buildMailtoUrl, isMobilePlatform, trackVolunteer } from '../../lib/mailto'
 import MedalsModal from './MedalsModal'
 import CatsModal from './CatsModal'
+import VolunteerModal from './VolunteerModal'
 
 interface Props {
   onClose: () => void
 }
 
 export default function SideMenu({ onClose }: Props) {
-  const [modal, setModal] = useState<'medals' | 'cats' | null>(null)
+  const [modal, setModal] = useState<'medals' | 'cats' | 'volunteer' | null>(null)
+
+  function handleVolunteer() {
+    if (isMobilePlatform()) {
+      trackVolunteer('menu', 'mobile', 'mailto')
+      window.location.href = buildMailtoUrl()
+    } else {
+      setModal('volunteer')
+    }
+  }
 
   return (
     <>
@@ -62,11 +73,10 @@ export default function SideMenu({ onClose }: Props) {
 
               <div className="mt-auto flex flex-col gap-1">
                 <button
-                  className="w-full text-left py-4 px-4 rounded-2xl font-semibold text-sm text-[#3D2E1F]/50 cursor-default"
-                  disabled
+                  onClick={handleVolunteer}
+                  className="w-full text-left py-4 px-4 rounded-2xl font-semibold text-sm text-[#E07856] hover:bg-[#E07856]/10 active:bg-[#E07856]/20 transition-colors"
                 >
                   ✉️ Quiero ser voluntario/a
-                  <span className="ml-2 text-[10px] text-[#3D2E1F]/30">(Fase 5)</span>
                 </button>
                 <a
                   href="https://lavegacats.com"
@@ -83,8 +93,13 @@ export default function SideMenu({ onClose }: Props) {
         )}
       </AnimatePresence>
 
-      {modal === 'medals' && <MedalsModal onClose={() => setModal(null)} />}
-      {modal === 'cats' && <CatsModal onClose={() => setModal(null)} />}
+      {modal === 'medals'    && <MedalsModal    onClose={() => setModal(null)} />}
+      {modal === 'cats'      && <CatsModal      onClose={() => setModal(null)} />}
+      <VolunteerModal
+        open={modal === 'volunteer'}
+        onClose={() => setModal(null)}
+        fromScreen="menu"
+      />
     </>
   )
 }
