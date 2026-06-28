@@ -1,4 +1,11 @@
 {
+  "sanctuary_title": {
+    "type": "map_label",
+    "label": "Cartel santuario",
+    "zone": "map",
+    "desktop": { "x": 0.5, "y": 0.08 },
+    "mobile":  { "x": 0.5, "y": 0.04 }
+  },
   "catio2": {
     "type": "zone_pin",
     "label": "Catio 2",

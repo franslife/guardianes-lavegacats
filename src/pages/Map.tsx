@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { useGameStore } from '../store/gameStore'
 import { useCharacterMovement } from '../hooks/useCharacterMovement'
 import { usePositions } from '../hooks/usePositions'
@@ -42,6 +43,7 @@ const UNLOCK_ANIM_DURATION = 3500
 export default function Map() {
   const navigate       = useNavigate()
   const prefersReduced = useReducedMotion()
+  const { t }          = useTranslation()
 
   const {
     characterId,
@@ -149,6 +151,37 @@ export default function Map() {
             className={`w-full ${aspectClass} object-cover block`}
             draggable={false}
           />
+
+          {/* ── Sanctuary title overlay ── */}
+          {(() => {
+            const pos = getCoords('sanctuary_title', viewport)
+            return (
+              <div
+                className="absolute pointer-events-none select-none z-[5]"
+                style={{
+                  left:      `${pos.x * 100}%`,
+                  top:       `${pos.y * 100}%`,
+                  transform: 'translate(-50%, -50%) rotate(-1deg)',
+                }}
+              >
+                <span
+                  style={{
+                    fontFamily:    '"Fraunces", Georgia, serif',
+                    fontSize:      'clamp(14px, 2vw + 8px, 30px)',
+                    fontWeight:    700,
+                    color:         '#3D2E1F',
+                    letterSpacing: '0.02em',
+                    textShadow:    '0 1px 0 rgba(255,255,255,0.30)',
+                    whiteSpace:    'nowrap',
+                    display:       'block',
+                    lineHeight:    1,
+                  }}
+                >
+                  {t('map.sanctuary_title')}
+                </span>
+              </div>
+            )
+          })()}
 
           {/* Zone pins */}
           {zonesData.map((zone) => {

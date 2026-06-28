@@ -2,7 +2,7 @@ import { supabase } from './supabase'
 import positionsJson from '../data/positions.json'
 
 export type Viewport = 'desktop' | 'mobile'
-export type ElementType = 'zone_pin' | 'hotspot' | 'character_spawn'
+export type ElementType = 'zone_pin' | 'hotspot' | 'character_spawn' | 'map_label'
 
 export interface Coords {
   x: number

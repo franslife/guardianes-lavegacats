@@ -23,11 +23,13 @@ const TYPE_COLOR: Record<ElementType, string> = {
   zone_pin: '#E07856',
   hotspot: '#F7D87C',
   character_spawn: '#7BA577',
+  map_label: '#A07840',
 }
 const TYPE_ICON: Record<ElementType, string> = {
   zone_pin: '📍',
   hotspot: '✨',
   character_spawn: '🧑',
+  map_label: '🪧',
 }
 
 function clamp(v: number) { return Math.max(0, Math.min(1, v)) }
@@ -195,7 +197,7 @@ export default function AdminEditor() {
 
   // Elements visible in current context
   const visibleElements = Object.entries(positions).filter(([, entry]) => {
-    if (context === 'map') return entry.type === 'zone_pin'
+    if (context === 'map') return entry.type === 'zone_pin' || entry.type === 'map_label'
     return (entry.type === 'hotspot' || entry.type === 'character_spawn') && entry.zone === context
   })
 
