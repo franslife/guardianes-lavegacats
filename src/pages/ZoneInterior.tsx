@@ -26,11 +26,11 @@ function useIsMobile() {
 }
 
 const ZONE_TASK_IMAGES: Record<string, TaskImages> = {
-  catio2:     { before: '/tasks/litter-dirty.webp',  during: '/tasks/litter-cleaning.webp', after: '/tasks/litter-clean.webp' },
-  comedor:    { before: '/tasks/feed-empty.webp',    during: '/tasks/feed-pouring.webp',    after: '/tasks/feed-full.webp' },
-  zona_relax: { before: '/tasks/water-murky.webp',   during: '/tasks/water-refilling.webp', after: '/tasks/water-clean.webp' },
-  enfermeria: { before: '/tasks/care-sad.webp',      during: '/tasks/care-petting.webp',    after: '/tasks/care-happy.webp' },
-  jardines:   { before: '/tasks/find-hidden.webp',   during: '/tasks/find-moving.webp',     after: '/tasks/find-found.webp' },
+  catio2:     { before: '/tasks/litter-dirty.png',  during: '/tasks/litter-cleaning.png', after: '/tasks/litter-clean.png' },
+  comedor:    { before: '/tasks/feed-empty.png',    during: '/tasks/feed-pouring.png',    after: '/tasks/feed-full.png' },
+  zona_relax: { before: '/tasks/water-murky.png',   during: '/tasks/water-refilling.png', after: '/tasks/water-clean.png' },
+  enfermeria: { before: '/tasks/care-sad.png',      during: '/tasks/care-petting.png',    after: '/tasks/care-happy.png' },
+  jardines:   { before: '/tasks/find-hidden.png',   during: '/tasks/find-moving.png',     after: '/tasks/find-found.png' },
 }
 
 const ZONE_TASK_TITLES: Record<string, string> = {
