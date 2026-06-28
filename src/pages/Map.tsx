@@ -167,7 +167,7 @@ export default function Map() {
                 <span
                   style={{
                     fontFamily:    '"Fraunces", Georgia, serif',
-                    fontSize:      'clamp(14px, 2vw + 8px, 30px)',
+                    fontSize:      'clamp(9px, 1vw + 4px, 14px)',
                     fontWeight:    700,
                     color:         '#3D2E1F',
                     letterSpacing: '0.02em',
