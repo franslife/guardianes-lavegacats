@@ -238,7 +238,7 @@ export default function ZoneInterior() {
                   characterId={characterId}
                   direction={direction}
                   isMoving={isMoving}
-                  size={isMobile ? 52 : 64}
+                  size={isMobile ? 72 : 88}
                 />
               </motion.div>
             </>

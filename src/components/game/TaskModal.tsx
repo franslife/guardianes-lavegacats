@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 
 export interface TaskImages {
   before: string
@@ -18,10 +18,19 @@ interface Props {
   onClose: () => void
 }
 
+const SPARKLE_OFFSETS = [
+  { x: '20%', delay: 0 },
+  { x: '50%', delay: 0.14 },
+  { x: '75%', delay: 0.07 },
+  { x: '38%', delay: 0.22 },
+]
+
 export default function TaskModal({ images, title, reward, longTask = false, onComplete, onClose }: Props) {
   const [phase, setPhase] = useState<Phase>('before')
+  const [sweeping, setSweeping] = useState(false)
+  const prefersReduced = useReducedMotion()
 
-  // Preload all 3 images immediately on mount to avoid flicker
+  // Preload all 3 images on mount
   useEffect(() => {
     [images.before, images.during, images.after].forEach((src) => {
       const img = new window.Image()
@@ -29,21 +38,31 @@ export default function TaskModal({ images, title, reward, longTask = false, onC
     })
   }, [])
 
-  // Timings (ms). Crossfade is 600ms handled by Framer Motion.
-  // before visible → switch to during → during visible → switch to after → after visible → reward → close
-  const duringMs = longTask ? 3000 : 2500
-  const t1 = 1200                        // → during
-  const t2 = t1 + duringMs              // → after
-  const t3 = t2 + 1200                  // → reward
-  const t4 = t3 + 1600                  // → complete
+  // Timing config (ms)
+  const beforeMs  = prefersReduced ? 800  : 2000
+  const duringMs  = longTask ? (prefersReduced ? 1500 : 4000) : (prefersReduced ? 1000 : 3000)
+  const afterMs   = prefersReduced ? 800  : 2000
+  const rewardMs  = prefersReduced ? 800  : 2000
+  const sweepMs   = prefersReduced ? 0    : 800
 
   useEffect(() => {
-    const timers = [
-      setTimeout(() => setPhase('during'),  t1),
-      setTimeout(() => setPhase('after'),   t2),
-      setTimeout(() => setPhase('reward'),  t3),
-      setTimeout(() => { setPhase('closing'); onComplete() }, t4),
-    ]
+    const timers: ReturnType<typeof setTimeout>[] = []
+
+    // before → during
+    timers.push(setTimeout(() => { setPhase('during'); if (!prefersReduced) setSweeping(true) }, beforeMs))
+    if (!prefersReduced) timers.push(setTimeout(() => setSweeping(false), beforeMs + sweepMs))
+
+    // during → after
+    const t2 = beforeMs + duringMs
+    timers.push(setTimeout(() => { setPhase('after'); if (!prefersReduced) setSweeping(true) }, t2))
+    if (!prefersReduced) timers.push(setTimeout(() => setSweeping(false), t2 + sweepMs))
+
+    // after → reward
+    timers.push(setTimeout(() => setPhase('reward'), t2 + afterMs))
+
+    // reward → close
+    timers.push(setTimeout(() => { setPhase('closing'); onComplete() }, t2 + afterMs + rewardMs))
+
     return () => timers.forEach(clearTimeout)
   }, [])
 
@@ -57,12 +76,12 @@ export default function TaskModal({ images, title, reward, longTask = false, onC
       className="fixed inset-0 z-[45] flex items-center justify-center p-4 md:p-10"
       animate={{ opacity: phase === 'closing' ? 0 : 1 }}
       initial={{ opacity: 0 }}
-      transition={{ duration: 0.4 }}
+      transition={{ duration: 0.6 }}
     >
       {/* Blurred backdrop */}
       <div className="absolute inset-0 bg-black/55 backdrop-blur-[3px]" />
 
-      {/* Modal card */}
+      {/* Modal card — overflow-hidden clips the sweep overlay */}
       <motion.div
         className="relative z-10 w-full max-w-sm md:max-w-md flex flex-col items-center rounded-3xl bg-[#FAF5EC] shadow-2xl overflow-hidden"
         style={{ maxHeight: '90dvh' }}
@@ -70,7 +89,38 @@ export default function TaskModal({ images, title, reward, longTask = false, onC
         animate={{ scale: 1, opacity: 1, y: 0 }}
         transition={{ type: 'spring', damping: 22, stiffness: 280, delay: 0.05 }}
       >
-        {/* Close button */}
+        {/* ── Golden sweep overlay (z above image, below close btn) ── */}
+        <AnimatePresence>
+          {sweeping && (
+            <>
+              {/* Main sweep band */}
+              <motion.div
+                key="sweep"
+                className="absolute inset-0 z-[15] pointer-events-none"
+                style={{
+                  background: 'linear-gradient(90deg, transparent 0%, rgba(247,216,124,0.55) 50%, transparent 100%)',
+                }}
+                initial={{ x: '-100%' }}
+                animate={{ x: '120%' }}
+                transition={{ duration: sweepMs / 1000, ease: 'easeInOut' }}
+              />
+
+              {/* Sparkles rising during sweep */}
+              {SPARKLE_OFFSETS.map(({ x, delay }, i) => (
+                <motion.div
+                  key={`spark-${i}`}
+                  className="absolute z-[16] w-2 h-2 rounded-full bg-[#F7D87C] pointer-events-none"
+                  style={{ left: x, bottom: '30%' }}
+                  initial={{ opacity: 0, y: 0, scale: 0.5 }}
+                  animate={{ opacity: [0, 1, 0], y: -60, scale: [0.5, 1.2, 0.3] }}
+                  transition={{ duration: 0.9, delay, ease: 'easeOut' }}
+                />
+              ))}
+            </>
+          )}
+        </AnimatePresence>
+
+        {/* Close button — z above sweep */}
         <button
           onClick={() => { setPhase('closing'); onClose() }}
           className="absolute top-3 right-3 z-20 w-8 h-8 flex items-center justify-center rounded-full bg-[#3D2E1F]/10 text-[#3D2E1F]/40 text-xl font-bold hover:bg-[#3D2E1F]/20 transition-colors"
@@ -83,7 +133,7 @@ export default function TaskModal({ images, title, reward, longTask = false, onC
           <p className="text-lg font-extrabold text-[#3D2E1F] leading-tight">{title}</p>
         </div>
 
-        {/* Image area — solid cream background so transparency composes cleanly */}
+        {/* Image area — explicit cream bg prevents checkered on transparency */}
         <div
           className="relative w-full flex items-center justify-center px-6 pb-6"
           style={{ minHeight: 220, background: '#FAF5EC' }}
@@ -96,51 +146,53 @@ export default function TaskModal({ images, title, reward, longTask = false, onC
               className="max-h-[50dvh] w-full object-contain"
               style={{ background: 'transparent' }}
               initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
+              animate={
+                phase === 'during' && !prefersReduced
+                  ? { opacity: 1, scale: [1, 1.02, 1, 1.02, 1] }
+                  : { opacity: 1, scale: 1 }
+              }
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.6, ease: 'easeInOut' }}
+              transition={
+                phase === 'during' && !prefersReduced
+                  ? { opacity: { duration: 0.6, ease: 'easeInOut' }, scale: { duration: 1.6, repeat: Infinity, ease: 'easeInOut' } }
+                  : { duration: 0.6, ease: 'easeInOut' }
+              }
               draggable={false}
             />
           </AnimatePresence>
 
-          {/* Reward overlay — hearts float up from image area */}
+          {/* Reward overlay — hearts float up */}
           <AnimatePresence>
             {phase === 'reward' && (
               <motion.div
-                className="absolute inset-0 flex flex-col items-center justify-end pb-4 pointer-events-none"
+                className="absolute inset-0 flex flex-col items-center justify-end pb-5 pointer-events-none"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.35 }}
               >
-                {/* Floating hearts */}
-                <div className="relative flex gap-3 text-2xl mb-2">
+                <div className="relative flex gap-2.5 text-2xl mb-3">
                   {[0, 1, 2, 3, 4].map((i) => (
                     <motion.span
                       key={i}
                       style={{ display: 'inline-block' }}
-                      initial={{ opacity: 0, y: 0, rotate: (i - 2) * 8 }}
-                      animate={{ opacity: [0, 1, 1, 0], y: -70 - i * 6 }}
-                      transition={{
-                        duration: 1.3,
-                        delay: i * 0.1,
-                        ease: 'easeOut',
-                      }}
+                      initial={{ opacity: 0, y: 0, rotate: (i - 2) * 10 }}
+                      animate={{ opacity: [0, 1, 1, 0], y: -80 - i * 8 }}
+                      transition={{ duration: 1.4, delay: i * 0.1, ease: 'easeOut' }}
                     >
                       💚
                     </motion.span>
                   ))}
                 </div>
 
-                {/* Reward text */}
                 <motion.div
-                  className="rounded-2xl bg-[#3D2E1F]/80 px-5 py-2 text-center"
-                  initial={{ opacity: 0, scale: 0.85 }}
+                  className="rounded-2xl bg-[#3D2E1F]/85 px-5 py-2.5 text-center shadow-lg"
+                  initial={{ opacity: 0, scale: 0.82 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.3, duration: 0.35 }}
+                  transition={{ delay: 0.25, type: 'spring', damping: 18, stiffness: 280 }}
                 >
                   <p className="text-base font-extrabold text-[#F7D87C]">+{reward} corazones</p>
-                  <p className="text-xs text-white/70 font-semibold">¡Bien hecho!</p>
+                  <p className="text-xs text-white/70 font-semibold mt-0.5">¡Bien hecho!</p>
                 </motion.div>
               </motion.div>
             )}

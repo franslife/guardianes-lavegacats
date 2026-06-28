@@ -46,9 +46,14 @@ export default function Hotspot({ x, y, state, onClick }: Props) {
 
       {state === 'done' && (
         <div className="flex h-10 w-10 items-center justify-center">
-          <div className="h-5 w-5 rounded-full bg-[#7BA577]/90 ring-2 ring-white/70 shadow flex items-center justify-center">
-            <span className="text-white text-[9px] font-extrabold leading-none">✓</span>
-          </div>
+          <motion.div
+            className="h-9 w-9 rounded-full bg-[#7BA577] border-[3px] border-white shadow-lg flex items-center justify-center"
+            initial={{ scale: 0 }}
+            animate={{ scale: [0, 1.25, 0.92, 1.05, 1] }}
+            transition={{ duration: 0.5, times: [0, 0.45, 0.65, 0.82, 1], ease: 'easeOut' }}
+          >
+            <span className="text-white text-sm font-extrabold leading-none select-none">✓</span>
+          </motion.div>
         </div>
       )}
     </div>
