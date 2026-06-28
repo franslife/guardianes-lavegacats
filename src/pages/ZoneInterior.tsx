@@ -6,15 +6,14 @@ import { usePositions } from '../hooks/usePositions'
 import { useCharacterMovement } from '../hooks/useCharacterMovement'
 import { supabase } from '../lib/supabase'
 import Character from '../components/game/Character'
-import Hotspot, { type HotspotState, type TaskImages } from '../components/game/Hotspot'
-import FloatingHearts from '../components/game/FloatingHearts'
+import Hotspot, { type HotspotState } from '../components/game/Hotspot'
+import TaskModal, { type TaskImages } from '../components/game/TaskModal'
 import MissionComplete from '../components/ui/MissionComplete'
 import Hud from '../components/ui/Hud'
 import zonesData from '../data/zones.json'
 import positionsJson from '../data/positions.json'
 
-type PositionsJson = typeof positionsJson
-type PosKey = keyof PositionsJson
+type PosKey = keyof typeof positionsJson
 
 function useIsMobile() {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
@@ -34,7 +33,20 @@ const ZONE_TASK_IMAGES: Record<string, TaskImages> = {
   jardines:   { before: '/tasks/find-hidden.webp',   during: '/tasks/find-moving.webp',     after: '/tasks/find-found.webp' },
 }
 
-// Derive hotspot IDs for a zone from positions.json
+const ZONE_TASK_TITLES: Record<string, string> = {
+  catio2:     'Limpia los areneros',
+  comedor:    'Alimenta a los gatos',
+  zona_relax: 'Rellena los bebederos',
+  enfermeria: 'Dale mimos a este gato',
+  jardines:   'Encuentra al gato escondido',
+}
+
+const ZONE_CATS: Record<string, string[]> = {
+  zona_relax: ['gandalf'], comedor: ['tito'],
+  jardines: ['vainilla'], enfermeria: ['pepe'],
+  catio2: ['sombra', 'frida'],
+}
+
 function getZoneHotspotIds(zoneId: string): string[] {
   return Object.keys(positionsJson).filter((key) => {
     const entry = (positionsJson as Record<string, { type: string; zone?: string }>)[key]
@@ -42,7 +54,6 @@ function getZoneHotspotIds(zoneId: string): string[] {
   })
 }
 
-// Save progress to Supabase (best-effort, non-blocking)
 async function syncToSupabase(
   anonymousId: string,
   characterId: string,
@@ -65,6 +76,11 @@ async function syncToSupabase(
   )
 }
 
+interface ActiveTask {
+  hotspotId: string
+  reward: number
+}
+
 export default function ZoneInterior() {
   const { zoneId } = useParams<{ zoneId: string }>()
   const navigate = useNavigate()
@@ -81,13 +97,11 @@ export default function ZoneInterior() {
   const zone = zonesData.find((z) => z.id === zoneId)
   const hotspotIds = zoneId ? getZoneHotspotIds(zoneId) : []
 
-  // Hotspot states: derive from store
   const [hotspotStates, setHotspotStates] = useState<Record<string, HotspotState>>(() => {
     const done = hotspotsCompleted[zoneId ?? ''] ?? []
     return Object.fromEntries(hotspotIds.map((id) => [id, done.includes(id) ? 'done' : 'pending']))
   })
 
-  // Re-sync when store loads (in case of reload)
   useEffect(() => {
     if (!zoneId) return
     const done = hotspotsCompleted[zoneId] ?? []
@@ -96,88 +110,79 @@ export default function ZoneInterior() {
     )
   }, [zoneId, hotspotsCompleted])
 
-  const [heartsTrigger, setHeartsTrigger] = useState(false)
-  const [lastHearts, setLastHearts] = useState(0)
+  const [activeTask, setActiveTask] = useState<ActiveTask | null>(null)
   const [showMissionComplete, setShowMissionComplete] = useState(false)
   const [heartsEarned, setHeartsEarned] = useState(0)
   const [missionNewMedals, setMissionNewMedals] = useState<string[]>([])
   const [missionCatGains, setMissionCatGains] = useState<Array<{ catId: string; newTrust: number; bioUnlocked: boolean }>>([])
 
-  // Zone-to-cats mapping (mirrors gameStore)
-  const ZONE_CATS: Record<string, string[]> = {
-    zona_relax: ['gandalf'], comedor: ['tito'],
-    jardines: ['vainilla'], enfermeria: ['pepe'],
-    catio2: ['sombra', 'frida'],
-  }
-
   const spawnId = `${zoneId}_spawn`
   const spawnCoords = getCoords(spawnId, viewport)
   const { position, direction, isMoving, duration, moveTo } = useCharacterMovement(spawnCoords)
 
-  // Redirect if not a valid/playable zone
   useEffect(() => {
     if (!zone || !zone.playable) navigate('/map', { replace: true })
   }, [zone])
+
+  const handleTaskComplete = useCallback((hotspotId: string, reward: number) => {
+    setActiveTask(null)
+    setHotspotStates((prev) => ({ ...prev, [hotspotId]: 'done' }))
+    addHearts(reward)
+    if (zoneId) markHotspotDone(zoneId, hotspotId)
+
+    // Persist and check mission complete
+    setHotspotStates((prev) => {
+      const updated: Record<string, HotspotState> = { ...prev, [hotspotId]: 'done' }
+      const allDone = Object.values(updated).every((s) => s === 'done')
+      if (allDone && zoneId) {
+        const totalReward = zone?.mission?.reward_hearts ?? 20
+        setHeartsEarned(totalReward)
+
+        const prevMedals = useGameStore.getState().medals
+        const prevBios = useGameStore.getState().biosUnlocked
+
+        completeMission(zoneId)
+
+        const nextMedals = useGameStore.getState().medals
+        const nextBios = useGameStore.getState().biosUnlocked
+        const nextTrust = useGameStore.getState().catTrust
+
+        setMissionNewMedals(nextMedals.filter((m) => !prevMedals.includes(m)))
+        setMissionCatGains(
+          (ZONE_CATS[zoneId] ?? []).map((catId) => ({
+            catId,
+            newTrust: nextTrust[catId] ?? 0,
+            bioUnlocked: !prevBios.includes(catId) && nextBios.includes(catId),
+          }))
+        )
+
+        setTimeout(() => setShowMissionComplete(true), 400)
+      }
+      return updated
+    })
+
+    if (zoneId && characterId) {
+      const updatedDone = {
+        ...hotspotsCompleted,
+        [zoneId]: [...(hotspotsCompleted[zoneId] ?? []), hotspotId],
+      }
+      syncToSupabase(anonymousId, characterId, hearts + reward, level, missionsCompleted, updatedDone)
+    }
+  }, [zoneId, addHearts, markHotspotDone, completeMission, characterId, anonymousId, hearts, level, missionsCompleted, hotspotsCompleted, zone])
 
   const handleHotspotClick = useCallback((hotspotId: string) => {
     if (hotspotStates[hotspotId] !== 'pending') return
     const coords = getCoords(hotspotId, viewport)
 
-    moveTo(coords.x, coords.y, () => {
-      // Arrived → start task
+    // Walk slightly above the hotspot so character doesn't cover it completely
+    const targetY = Math.max(0.05, coords.y - 0.06)
+
+    moveTo(coords.x, targetY, () => {
+      const reward = Math.round((zone?.mission?.reward_hearts ?? 20) / hotspotIds.length)
       setHotspotStates((prev) => ({ ...prev, [hotspotId]: 'in_progress' }))
-
-      // Task animation: 3.5s placeholder
-      setTimeout(() => {
-        const reward = Math.round((zone?.mission?.reward_hearts ?? 20) / hotspotIds.length)
-        setLastHearts(reward)
-        setHeartsTrigger(true)
-
-        setHotspotStates((prev) => ({ ...prev, [hotspotId]: 'done' }))
-        addHearts(reward)
-        if (zoneId) markHotspotDone(zoneId, hotspotId)
-
-        // Check all done
-        setHotspotStates((prev) => {
-          const updated: Record<string, HotspotState> = { ...prev, [hotspotId]: 'done' }
-          const allDone = Object.values(updated).every((s) => s === 'done')
-          if (allDone && zoneId) {
-            const totalReward = zone?.mission?.reward_hearts ?? 20
-            setHeartsEarned(totalReward)
-
-            // Snapshot before completeMission mutates the store
-            const prevMedals = useGameStore.getState().medals
-            const prevBios = useGameStore.getState().biosUnlocked
-            const prevTrust = { ...useGameStore.getState().catTrust }
-
-            completeMission(zoneId)
-
-            // Compute what changed
-            const nextMedals = useGameStore.getState().medals
-            const nextBios = useGameStore.getState().biosUnlocked
-            const nextTrust = useGameStore.getState().catTrust
-            setMissionNewMedals(nextMedals.filter((m) => !prevMedals.includes(m)))
-
-            const gains = (ZONE_CATS[zoneId] ?? []).map((catId) => ({
-              catId,
-              newTrust: nextTrust[catId] ?? 0,
-              bioUnlocked: !prevBios.includes(catId) && nextBios.includes(catId),
-            })).filter(({ newTrust }) => newTrust > (prevTrust[newTrust] ?? 0) || true)
-            setMissionCatGains(gains)
-
-            setTimeout(() => setShowMissionComplete(true), 800)
-          }
-          return updated
-        })
-
-        // Persist to Supabase
-        if (zoneId && characterId) {
-          const updatedDone = { ...hotspotsCompleted, [zoneId]: [...(hotspotsCompleted[zoneId] ?? []), hotspotId] }
-          syncToSupabase(anonymousId, characterId, hearts + reward, level, missionsCompleted, updatedDone)
-        }
-      }, 3500)
+      setActiveTask({ hotspotId, reward })
     })
-  }, [hotspotStates, viewport, getCoords, moveTo, zone, hotspotIds, zoneId, addHearts, markHotspotDone, completeMission, characterId, anonymousId, hearts, level, missionsCompleted, hotspotsCompleted])
+  }, [hotspotStates, viewport, getCoords, moveTo, zone, hotspotIds])
 
   if (!zone || !characterId) return null
 
@@ -185,6 +190,9 @@ export default function ZoneInterior() {
     ? (zone as any).interiorImageMobile
     : (zone as any).interiorImageDesktop
 
+  const taskImages = ZONE_TASK_IMAGES[zoneId ?? ''] ?? ZONE_TASK_IMAGES.catio2
+  const taskTitle = ZONE_TASK_TITLES[zoneId ?? ''] ?? ''
+  const isLongTask = zoneId === 'enfermeria'
   const pendingCount = Object.values(hotspotStates).filter((s) => s === 'pending').length
 
   return (
@@ -193,7 +201,6 @@ export default function ZoneInterior() {
 
       <div className="flex-1 mt-14 overflow-y-auto overflow-x-hidden">
         <div className="relative w-full">
-          {/* Interior image */}
           {posLoading ? (
             <div className="flex items-center justify-center h-64 text-white/50">Cargando...</div>
           ) : (
@@ -205,29 +212,19 @@ export default function ZoneInterior() {
                 draggable={false}
               />
 
-              {/* Hotspots */}
               {hotspotIds.map((hid) => {
                 const coords = getCoords(hid as PosKey, viewport)
-                const entry = (positionsJson as Record<string, { label: string }>)[hid]
-                const taskImages = ZONE_TASK_IMAGES[zoneId ?? ''] ?? {
-                  before: '/tasks/litter-dirty.webp',
-                  during: '/tasks/litter-cleaning.webp',
-                  after: '/tasks/litter-clean.webp',
-                }
                 return (
                   <Hotspot
                     key={hid}
                     x={coords.x}
                     y={coords.y}
-                    label={entry?.label ?? hid}
                     state={hotspotStates[hid] ?? 'pending'}
-                    taskImages={taskImages}
                     onClick={() => handleHotspotClick(hid)}
                   />
                 )
               })}
 
-              {/* Character */}
               <motion.div
                 className="absolute z-20 pointer-events-none"
                 animate={{
@@ -270,12 +267,20 @@ export default function ZoneInterior() {
         )}
       </div>
 
-      {/* Corazones flotantes */}
-      <FloatingHearts
-        amount={lastHearts}
-        trigger={heartsTrigger}
-        onDone={() => setHeartsTrigger(false)}
-      />
+      {/* Task modal */}
+      {activeTask && (
+        <TaskModal
+          images={taskImages}
+          title={taskTitle}
+          reward={activeTask.reward}
+          longTask={isLongTask}
+          onComplete={() => handleTaskComplete(activeTask.hotspotId, activeTask.reward)}
+          onClose={() => {
+            // Early close: mark as done immediately
+            handleTaskComplete(activeTask.hotspotId, activeTask.reward)
+          }}
+        />
+      )}
 
       {/* Misión completada */}
       {showMissionComplete && (
