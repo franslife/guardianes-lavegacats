@@ -6,7 +6,7 @@ import { usePositions } from '../hooks/usePositions'
 import { useCharacterMovement } from '../hooks/useCharacterMovement'
 import { supabase } from '../lib/supabase'
 import Character from '../components/game/Character'
-import Hotspot, { type HotspotState } from '../components/game/Hotspot'
+import Hotspot, { type HotspotState, type TaskImages } from '../components/game/Hotspot'
 import FloatingHearts from '../components/game/FloatingHearts'
 import MissionComplete from '../components/ui/MissionComplete'
 import Hud from '../components/ui/Hud'
@@ -24,6 +24,14 @@ function useIsMobile() {
     return () => window.removeEventListener('resize', handler)
   }, [])
   return isMobile
+}
+
+const ZONE_TASK_IMAGES: Record<string, TaskImages> = {
+  catio2:     { before: '/tasks/litter-dirty.webp',  during: '/tasks/litter-cleaning.webp', after: '/tasks/litter-clean.webp' },
+  comedor:    { before: '/tasks/feed-empty.webp',    during: '/tasks/feed-pouring.webp',    after: '/tasks/feed-full.webp' },
+  zona_relax: { before: '/tasks/water-murky.webp',   during: '/tasks/water-refilling.webp', after: '/tasks/water-clean.webp' },
+  enfermeria: { before: '/tasks/care-sad.webp',      during: '/tasks/care-petting.webp',    after: '/tasks/care-happy.webp' },
+  jardines:   { before: '/tasks/find-hidden.webp',   during: '/tasks/find-moving.webp',     after: '/tasks/find-found.webp' },
 }
 
 // Derive hotspot IDs for a zone from positions.json
@@ -201,6 +209,11 @@ export default function ZoneInterior() {
               {hotspotIds.map((hid) => {
                 const coords = getCoords(hid as PosKey, viewport)
                 const entry = (positionsJson as Record<string, { label: string }>)[hid]
+                const taskImages = ZONE_TASK_IMAGES[zoneId ?? ''] ?? {
+                  before: '/tasks/litter-dirty.webp',
+                  during: '/tasks/litter-cleaning.webp',
+                  after: '/tasks/litter-clean.webp',
+                }
                 return (
                   <Hotspot
                     key={hid}
@@ -208,6 +221,7 @@ export default function ZoneInterior() {
                     y={coords.y}
                     label={entry?.label ?? hid}
                     state={hotspotStates[hid] ?? 'pending'}
+                    taskImages={taskImages}
                     onClick={() => handleHotspotClick(hid)}
                   />
                 )

@@ -1,17 +1,29 @@
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 
 export type HotspotState = 'pending' | 'in_progress' | 'done'
+
+export interface TaskImages {
+  before: string   // pending
+  during: string   // in_progress
+  after: string    // done
+}
 
 interface Props {
   x: number
   y: number
   label: string
   state: HotspotState
+  taskImages: TaskImages
   onClick: () => void
 }
 
-export default function Hotspot({ x, y, label, state, onClick }: Props) {
+export default function Hotspot({ x, y, label, state, taskImages, onClick }: Props) {
   const clickable = state === 'pending'
+
+  const imageSrc =
+    state === 'pending' ? taskImages.before :
+    state === 'in_progress' ? taskImages.during :
+    taskImages.after
 
   return (
     <div
@@ -23,61 +35,76 @@ export default function Hotspot({ x, y, label, state, onClick }: Props) {
         pointerEvents: clickable ? 'auto' : 'none',
       }}
     >
-      {state === 'pending' && (
-        <motion.button
-          onClick={onClick}
-          className="relative flex h-12 w-12 items-center justify-center rounded-full focus:outline-none"
-          whileTap={{ scale: 0.88 }}
-          title={label}
+      <div className="relative flex flex-col items-center">
+        {/* Image container — fixed size, crossfade between states */}
+        <div
+          className={`relative w-16 h-16 rounded-2xl overflow-hidden shadow-lg ${
+            clickable ? 'cursor-pointer' : ''
+          }`}
+          onClick={clickable ? onClick : undefined}
         >
-          {/* Outer glow ring */}
-          <motion.div
-            className="absolute inset-0 rounded-full bg-[#F7D87C]/40"
-            animate={{ scale: [1, 1.5, 1], opacity: [0.7, 0, 0.7] }}
-            transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
-          />
-          {/* Core */}
-          <motion.div
-            className="h-9 w-9 rounded-full bg-[#F7D87C] shadow-[0_0_12px_4px_rgba(247,216,124,0.6)] border-2 border-white flex items-center justify-center text-lg"
-            animate={{ scale: [1, 1.08, 1] }}
-            transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
-          >
-            ✨
-          </motion.div>
-        </motion.button>
-      )}
+          <AnimatePresence mode="sync">
+            <motion.img
+              key={imageSrc}
+              src={imageSrc}
+              alt={label}
+              className="absolute inset-0 w-full h-full object-cover"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.4 }}
+              draggable={false}
+            />
+          </AnimatePresence>
 
-      {state === 'in_progress' && (
-        <div className="relative flex h-12 w-12 items-center justify-center">
-          <motion.div
-            className="h-10 w-10 rounded-full bg-[#E07856] border-2 border-white shadow-lg flex items-center justify-center text-lg"
-            animate={{ rotate: 360 }}
-            transition={{ duration: 1.2, repeat: Infinity, ease: 'linear' }}
-          >
-            ⚙️
-          </motion.div>
+          {/* Pending: pulsing golden glow overlay */}
+          {state === 'pending' && (
+            <>
+              <motion.div
+                className="absolute inset-0 rounded-2xl ring-4 ring-[#F7D87C]"
+                animate={{ opacity: [0.8, 0.2, 0.8] }}
+                transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
+              />
+              {/* Outer pulse ring */}
+              <motion.div
+                className="absolute -inset-2 rounded-3xl bg-[#F7D87C]/25"
+                animate={{ scale: [1, 1.15, 1], opacity: [0.5, 0, 0.5] }}
+                transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
+              />
+            </>
+          )}
+
+          {/* In progress: subtle shimmer overlay */}
+          {state === 'in_progress' && (
+            <motion.div
+              className="absolute inset-0 bg-white/15"
+              animate={{ opacity: [0.1, 0.3, 0.1] }}
+              transition={{ duration: 0.9, repeat: Infinity, ease: 'easeInOut' }}
+            />
+          )}
+
+          {/* Done: soft green overlay */}
+          {state === 'done' && (
+            <div className="absolute inset-0 bg-[#7BA577]/20 flex items-end justify-end p-1">
+              <div className="w-5 h-5 rounded-full bg-[#7BA577] flex items-center justify-center">
+                <span className="text-white text-[10px] font-bold">✓</span>
+              </div>
+            </div>
+          )}
         </div>
-      )}
 
-      {state === 'done' && (
-        <div className="flex h-12 w-12 items-center justify-center">
-          <div className="h-9 w-9 rounded-full bg-[#7BA577]/60 border-2 border-white/60 flex items-center justify-center text-lg opacity-70">
-            ✓
-          </div>
+        {/* Label */}
+        <div
+          className={`mt-1.5 whitespace-nowrap text-[10px] font-bold px-2 py-0.5 rounded-full shadow ${
+            state === 'done'
+              ? 'bg-[#7BA577]/80 text-white'
+              : state === 'in_progress'
+                ? 'bg-[#E07856] text-white'
+                : 'bg-[#3D2E1F]/80 text-white'
+          }`}
+        >
+          {label}
         </div>
-      )}
-
-      {/* Label shown below */}
-      <div
-        className={`absolute left-1/2 top-full mt-1 -translate-x-1/2 whitespace-nowrap text-[10px] font-bold px-2 py-0.5 rounded-full shadow ${
-          state === 'done'
-            ? 'bg-[#7BA577]/70 text-white/80'
-            : state === 'in_progress'
-              ? 'bg-[#E07856] text-white'
-              : 'bg-[#3D2E1F]/80 text-white'
-        }`}
-      >
-        {label}
       </div>
     </div>
   )
