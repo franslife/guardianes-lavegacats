@@ -9,6 +9,8 @@ interface GameState {
   hearts: number
   level: number
   missionsCompleted: string[]
+  // zoneId → array of completed hotspot IDs
+  hotspotsCompleted: Record<string, string[]>
   turnsCompleted: number
   medals: string[]
   catTrust: Record<string, number>
@@ -16,7 +18,7 @@ interface GameState {
 
   setCharacter: (id: CharacterId) => void
   addHearts: (amount: number) => void
-  completeHotspot: (zoneId: string) => void
+  markHotspotDone: (zoneId: string, hotspotId: string) => void
   completeMission: (zoneId: string) => void
   completeTurn: () => void
   unlockBio: (catId: string) => void
@@ -33,12 +35,13 @@ function calcLevel(hearts: number): number {
 
 export const useGameStore = create<GameState>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       anonymousId: crypto.randomUUID(),
       characterId: null,
       hearts: 0,
       level: 1,
       missionsCompleted: [],
+      hotspotsCompleted: {},
       turnsCompleted: 0,
       medals: [],
       catTrust: {},
@@ -52,11 +55,17 @@ export const useGameStore = create<GameState>()(
           return { hearts: newHearts, level: calcLevel(newHearts) }
         }),
 
-      completeHotspot: (_zoneId) => {
-        const medals = [...get().medals]
-        if (!medals.includes('primer_cuidado')) medals.push('primer_cuidado')
-        set({ medals })
-      },
+      markHotspotDone: (zoneId, hotspotId) =>
+        set((s) => {
+          const prev = s.hotspotsCompleted[zoneId] ?? []
+          if (prev.includes(hotspotId)) return {}
+          const medals = [...s.medals]
+          if (!medals.includes('primer_cuidado')) medals.push('primer_cuidado')
+          return {
+            hotspotsCompleted: { ...s.hotspotsCompleted, [zoneId]: [...prev, hotspotId] },
+            medals,
+          }
+        }),
 
       completeMission: (zoneId) =>
         set((s) => {
@@ -75,6 +84,7 @@ export const useGameStore = create<GameState>()(
           return {
             turnsCompleted: s.turnsCompleted + 1,
             missionsCompleted: [],
+            hotspotsCompleted: {},
             medals,
           }
         }),

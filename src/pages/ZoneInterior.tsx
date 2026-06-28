@@ -1,7 +1,248 @@
+import { useState, useEffect, useCallback } from 'react'
+import { useParams, useNavigate } from 'react-router-dom'
+import { motion } from 'framer-motion'
+import { useGameStore } from '../store/gameStore'
+import { usePositions } from '../hooks/usePositions'
+import { useCharacterMovement } from '../hooks/useCharacterMovement'
+import { supabase } from '../lib/supabase'
+import Character from '../components/game/Character'
+import Hotspot, { type HotspotState } from '../components/game/Hotspot'
+import FloatingHearts from '../components/game/FloatingHearts'
+import MissionComplete from '../components/ui/MissionComplete'
+import Hud from '../components/ui/Hud'
+import zonesData from '../data/zones.json'
+import positionsJson from '../data/positions.json'
+
+type PositionsJson = typeof positionsJson
+type PosKey = keyof PositionsJson
+
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
+  useEffect(() => {
+    const handler = () => setIsMobile(window.innerWidth < 768)
+    window.addEventListener('resize', handler)
+    return () => window.removeEventListener('resize', handler)
+  }, [])
+  return isMobile
+}
+
+// Derive hotspot IDs for a zone from positions.json
+function getZoneHotspotIds(zoneId: string): string[] {
+  return Object.keys(positionsJson).filter((key) => {
+    const entry = (positionsJson as Record<string, { type: string; zone?: string }>)[key]
+    return entry.type === 'hotspot' && entry.zone === zoneId
+  })
+}
+
+// Save progress to Supabase (best-effort, non-blocking)
+async function syncToSupabase(
+  anonymousId: string,
+  characterId: string,
+  hearts: number,
+  level: number,
+  missionsCompleted: string[],
+  hotspotsCompleted: Record<string, string[]>
+) {
+  await supabase.from('player_progress').upsert(
+    {
+      anonymous_id: anonymousId,
+      character_id: characterId,
+      hearts,
+      level,
+      missions_completed: missionsCompleted,
+      hotspots_completed: hotspotsCompleted,
+      updated_at: new Date().toISOString(),
+    },
+    { onConflict: 'anonymous_id' }
+  )
+}
+
 export default function ZoneInterior() {
+  const { zoneId } = useParams<{ zoneId: string }>()
+  const navigate = useNavigate()
+  const isMobile = useIsMobile()
+  const viewport = isMobile ? 'mobile' : 'desktop'
+
+  const { getCoords, loading: posLoading } = usePositions()
+  const {
+    anonymousId, characterId, hearts, level,
+    missionsCompleted, hotspotsCompleted,
+    addHearts, markHotspotDone, completeMission,
+  } = useGameStore()
+
+  const zone = zonesData.find((z) => z.id === zoneId)
+  const hotspotIds = zoneId ? getZoneHotspotIds(zoneId) : []
+
+  // Hotspot states: derive from store
+  const [hotspotStates, setHotspotStates] = useState<Record<string, HotspotState>>(() => {
+    const done = hotspotsCompleted[zoneId ?? ''] ?? []
+    return Object.fromEntries(hotspotIds.map((id) => [id, done.includes(id) ? 'done' : 'pending']))
+  })
+
+  // Re-sync when store loads (in case of reload)
+  useEffect(() => {
+    if (!zoneId) return
+    const done = hotspotsCompleted[zoneId] ?? []
+    setHotspotStates(
+      Object.fromEntries(hotspotIds.map((id) => [id, done.includes(id) ? 'done' : 'pending']))
+    )
+  }, [zoneId, hotspotsCompleted])
+
+  const [heartsTrigger, setHeartsTrigger] = useState(false)
+  const [lastHearts, setLastHearts] = useState(0)
+  const [showMissionComplete, setShowMissionComplete] = useState(false)
+  const [heartsEarned, setHeartsEarned] = useState(0)
+
+  const spawnId = `${zoneId}_spawn`
+  const spawnCoords = getCoords(spawnId, viewport)
+  const { position, direction, isMoving, duration, moveTo } = useCharacterMovement(spawnCoords)
+
+  // Redirect if not a valid/playable zone
+  useEffect(() => {
+    if (!zone || !zone.playable) navigate('/map', { replace: true })
+  }, [zone])
+
+  const handleHotspotClick = useCallback((hotspotId: string) => {
+    if (hotspotStates[hotspotId] !== 'pending') return
+    const coords = getCoords(hotspotId, viewport)
+
+    moveTo(coords.x, coords.y, () => {
+      // Arrived → start task
+      setHotspotStates((prev) => ({ ...prev, [hotspotId]: 'in_progress' }))
+
+      // Task animation: 3.5s placeholder
+      setTimeout(() => {
+        const reward = Math.round((zone?.mission?.reward_hearts ?? 20) / hotspotIds.length)
+        setLastHearts(reward)
+        setHeartsTrigger(true)
+
+        setHotspotStates((prev) => ({ ...prev, [hotspotId]: 'done' }))
+        addHearts(reward)
+        if (zoneId) markHotspotDone(zoneId, hotspotId)
+
+        // Check all done
+        setHotspotStates((prev) => {
+          const updated: Record<string, HotspotState> = { ...prev, [hotspotId]: 'done' }
+          const allDone = Object.values(updated).every((s) => s === 'done')
+          if (allDone && zoneId) {
+            const totalReward = zone?.mission?.reward_hearts ?? 20
+            setHeartsEarned(totalReward)
+            completeMission(zoneId)
+            setTimeout(() => setShowMissionComplete(true), 800)
+          }
+          return updated
+        })
+
+        // Persist to Supabase
+        if (zoneId && characterId) {
+          const updatedDone = { ...hotspotsCompleted, [zoneId]: [...(hotspotsCompleted[zoneId] ?? []), hotspotId] }
+          syncToSupabase(anonymousId, characterId, hearts + reward, level, missionsCompleted, updatedDone)
+        }
+      }, 3500)
+    })
+  }, [hotspotStates, viewport, getCoords, moveTo, zone, hotspotIds, zoneId, addHearts, markHotspotDone, completeMission, characterId, anonymousId, hearts, level, missionsCompleted, hotspotsCompleted])
+
+  if (!zone || !characterId) return null
+
+  const interiorSrc = isMobile
+    ? (zone as any).interiorImageMobile
+    : (zone as any).interiorImageDesktop
+
+  const pendingCount = Object.values(hotspotStates).filter((s) => s === 'pending').length
+
   return (
-    <div className="flex items-center justify-center min-h-dvh">
-      <p className="text-2xl font-bold">ZoneInterior</p>
+    <div className="flex flex-col min-h-dvh bg-[#1A1008] overflow-hidden">
+      <Hud />
+
+      <div className="flex-1 mt-14 overflow-y-auto overflow-x-hidden">
+        <div className="relative w-full">
+          {/* Interior image */}
+          {posLoading ? (
+            <div className="flex items-center justify-center h-64 text-white/50">Cargando...</div>
+          ) : (
+            <>
+              <img
+                src={interiorSrc}
+                alt={zone.name}
+                className="w-full block object-cover"
+                draggable={false}
+              />
+
+              {/* Hotspots */}
+              {hotspotIds.map((hid) => {
+                const coords = getCoords(hid as PosKey, viewport)
+                const entry = (positionsJson as Record<string, { label: string }>)[hid]
+                return (
+                  <Hotspot
+                    key={hid}
+                    x={coords.x}
+                    y={coords.y}
+                    label={entry?.label ?? hid}
+                    state={hotspotStates[hid] ?? 'pending'}
+                    onClick={() => handleHotspotClick(hid)}
+                  />
+                )
+              })}
+
+              {/* Character */}
+              <motion.div
+                className="absolute z-20 pointer-events-none"
+                animate={{
+                  left: `${position.x * 100}%`,
+                  top: `${position.y * 100}%`,
+                }}
+                style={{ transform: 'translate(-50%, -100%)' }}
+                transition={{ type: 'tween', ease: 'easeInOut', duration }}
+              >
+                <Character
+                  characterId={characterId}
+                  direction={direction}
+                  isMoving={isMoving}
+                  size={isMobile ? 52 : 64}
+                />
+              </motion.div>
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* Botón salir */}
+      <button
+        onClick={() => navigate('/map')}
+        className="fixed top-16 left-4 z-30 flex items-center gap-1.5 rounded-full bg-[#3D2E1F]/80 px-4 py-2 text-sm font-bold text-white shadow-lg backdrop-blur-sm active:scale-95 transition-transform"
+      >
+        ← Salir
+      </button>
+
+      {/* Contador de tareas pendientes */}
+      <div className="fixed top-16 right-4 z-30 rounded-full bg-[#3D2E1F]/80 px-3 py-2 text-xs font-bold text-white shadow backdrop-blur-sm">
+        {pendingCount} pendiente{pendingCount !== 1 ? 's' : ''}
+      </div>
+
+      {/* Título de zona */}
+      <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-30 rounded-full bg-[#F5EBD8]/95 px-5 py-2 shadow-lg">
+        <span className="text-sm font-bold text-[#3D2E1F]">{zone.name}</span>
+        {(zone as any).mission && (
+          <span className="ml-2 text-xs text-[#E07856] font-semibold">— {(zone as any).mission.title}</span>
+        )}
+      </div>
+
+      {/* Corazones flotantes */}
+      <FloatingHearts
+        amount={lastHearts}
+        trigger={heartsTrigger}
+        onDone={() => setHeartsTrigger(false)}
+      />
+
+      {/* Misión completada */}
+      {showMissionComplete && (
+        <MissionComplete
+          zoneName={zone.name}
+          heartsEarned={heartsEarned}
+          level={level}
+          onContinue={() => navigate('/map')}
+        />
+      )}
     </div>
   )
 }
