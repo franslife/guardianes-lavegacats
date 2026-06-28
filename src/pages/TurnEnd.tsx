@@ -1,15 +1,34 @@
-import { motion } from 'framer-motion'
+import { motion, useReducedMotion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import { useGameStore } from '../store/gameStore'
 import { openVolunteerEmail } from '../lib/mailto'
 
+function PawPrintIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      className={className}
+      aria-hidden="true"
+    >
+      <ellipse cx="6" cy="7.5" rx="1.8" ry="2.4" />
+      <ellipse cx="10.5" cy="5.5" rx="1.8" ry="2.4" />
+      <ellipse cx="15" cy="5.5" rx="1.8" ry="2.4" />
+      <ellipse cx="18.5" cy="7.5" rx="1.8" ry="2.4" />
+      <path d="M12 9.5c-3.5 0-6.5 2.5-6.5 5.5 0 2 1.5 3.5 3 4 1 .3 2 .5 3.5.5s2.5-.2 3.5-.5c1.5-.5 3-2 3-4 0-3-3-5.5-6.5-5.5z" />
+    </svg>
+  )
+}
+
 export default function TurnEnd() {
-  const navigate = useNavigate()
-  const { hearts, completeTurn } = useGameStore()
+  const navigate    = useNavigate()
+  const prefersReduced = useReducedMotion()
+  const { hearts, resetSession } = useGameStore()
 
   function handlePlayAgain() {
-    completeTurn()
-    navigate('/map')
+    resetSession()
+    navigate('/select', { replace: true })
   }
 
   return (
@@ -54,14 +73,17 @@ export default function TurnEnd() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.7 }}
-        className="flex flex-col gap-3 w-full max-w-sm"
+        className="flex flex-col gap-3 w-full max-w-sm items-center"
       >
+        {/* CTA 1 — Voluntario */}
         <button
           onClick={() => openVolunteerEmail('turn_end')}
           className="w-full bg-[#E07856] text-white font-bold py-4 rounded-2xl text-lg shadow-lg active:scale-95 transition-transform"
         >
           Quiero ser voluntario/a
         </button>
+
+        {/* CTA 2 — Web */}
         <a
           href="https://lavegacats.com"
           target="_blank"
@@ -70,12 +92,46 @@ export default function TurnEnd() {
         >
           Visitar lavegacats.com
         </a>
+
+        {/* CTA 3 — Compartir (futuro) */}
         <button
-          onClick={handlePlayAgain}
-          className="text-white/70 py-2 text-sm font-medium"
+          disabled
+          className="w-full border-2 border-white/40 text-white/50 font-semibold py-3.5 rounded-2xl text-base cursor-default"
         >
-          Jugar otro turno
+          Compartir mi turno <span className="text-xs font-normal opacity-60">(pronto)</span>
         </button>
+
+        {/* Separador */}
+        <div className="w-full h-px bg-white/20 my-1" />
+
+        {/* CTA 4 — Jugar otro turno (tarjeta) */}
+        <motion.button
+          onClick={handlePlayAgain}
+          className="w-full flex items-center gap-3 rounded-[18px] bg-[#F5EBD8] border-2 border-[#7BA577] px-5 py-4 shadow-[0_2px_8px_rgba(0,0,0,0.08)] text-left cursor-pointer
+            hover:shadow-[0_4px_14px_rgba(0,0,0,0.13)] hover:border-[#5a8f57]
+            active:scale-[0.98] transition-all duration-150"
+          animate={
+            prefersReduced
+              ? {}
+              : { scale: [1, 1.015, 1] }
+          }
+          transition={
+            prefersReduced
+              ? {}
+              : { duration: 3, repeat: Infinity, ease: 'easeInOut', repeatDelay: 1 }
+          }
+          whileTap={{ scale: 0.97 }}
+        >
+          <PawPrintIcon className="w-7 h-7 text-[#7BA577] flex-shrink-0" />
+          <div className="flex flex-col items-start leading-tight">
+            <span className="text-[17px] sm:text-[19px] font-semibold text-[#3D2E1F]">
+              ¿Repetimos turno?
+            </span>
+            <span className="text-[13px] text-[#3D2E1F]/55 italic mt-0.5">
+              Nuevo día en el santuario
+            </span>
+          </div>
+        </motion.button>
       </motion.div>
     </div>
   )
