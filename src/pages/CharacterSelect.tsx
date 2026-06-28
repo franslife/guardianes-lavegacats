@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useGameStore } from '../store/gameStore'
 import Character from '../components/game/Character'
+import { ROUTES } from '../lib/routes'
 
 const CHARACTERS = [
   { id: 'volunteer_f' as const, name: 'Voluntaria', emoji: '👩' },
@@ -19,7 +20,7 @@ export default function CharacterSelect() {
   function handleContinue() {
     if (!selected) return
     setCharacter(selected as 'volunteer_f' | 'volunteer_m' | 'volunteer_n')
-    navigate('/map')
+    navigate(ROUTES.map)
   }
 
   return (

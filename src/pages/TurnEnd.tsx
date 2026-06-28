@@ -1,6 +1,7 @@
 import { motion, useReducedMotion } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import { useGameStore } from '../store/gameStore'
+import { ROUTES } from '../lib/routes'
 import { openVolunteerEmail } from '../lib/mailto'
 import levelsData from '../data/levels.json'
 
@@ -25,7 +26,7 @@ export default function TurnEnd() {
 
   function handlePlayAgain() {
     resetSession()
-    navigate('/select', { replace: true })
+    navigate(ROUTES.select, { replace: true })
   }
 
   return (

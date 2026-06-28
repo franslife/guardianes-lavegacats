@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useGameStore } from '../store/gameStore'
+import { ROUTES, SLUG_TO_ZONE } from '../lib/routes'
 import { usePositions } from '../hooks/usePositions'
 import { useCharacterMovement } from '../hooks/useCharacterMovement'
 import { supabase } from '../lib/supabase'
@@ -90,7 +91,8 @@ interface ActiveTask {
 }
 
 export default function ZoneInterior() {
-  const { zoneId } = useParams<{ zoneId: string }>()
+  const { slug } = useParams<{ slug: string }>()
+  const zoneId = slug ? SLUG_TO_ZONE[slug] : undefined
   const navigate = useNavigate()
   const isMobile = useIsMobile()
   const viewport = isMobile ? 'mobile' : 'desktop'
@@ -131,8 +133,10 @@ export default function ZoneInterior() {
   const [isLastMission, setIsLastMission] = useState(false)
 
   useEffect(() => {
-    if (!zone || !zone.playable) { navigate('/map', { replace: true }); return }
-    if (zoneId && !unlockedZones.includes(zoneId)) navigate('/map', { replace: true })
+    if (!zone || !zone.playable) { navigate(ROUTES.map, { replace: true }); return }
+    if (zoneId && !unlockedZones.includes(zoneId)) {
+      navigate(ROUTES.map, { replace: true, state: { toast: 'Esta zona aún no está disponible' } })
+    }
   }, [zone, unlockedZones])
 
   const handleTaskComplete = useCallback((hotspotId: string, reward: number) => {
@@ -262,7 +266,7 @@ export default function ZoneInterior() {
 
       {/* Botón salir */}
       <button
-        onClick={() => navigate('/map')}
+        onClick={() => navigate(ROUTES.map)}
         className="fixed top-16 left-4 z-30 flex items-center gap-1.5 rounded-full bg-[#3D2E1F]/80 px-4 py-2 text-sm font-bold text-white shadow-lg backdrop-blur-sm active:scale-95 transition-transform"
       >
         ← Salir
@@ -305,7 +309,7 @@ export default function ZoneInterior() {
           level={level}
           newMedals={missionNewMedals}
           catGains={missionCatGains}
-          onContinue={() => navigate(isLastMission ? '/end' : '/map')}
+          onContinue={() => navigate(isLastMission ? ROUTES.end : ROUTES.map)}
         />
       )}
     </div>

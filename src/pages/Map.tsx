@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { ROUTES, ZONE_SLUGS } from '../lib/routes'
 import { useGameStore } from '../store/gameStore'
 import { useCharacterMovement } from '../hooks/useCharacterMovement'
 import { usePositions } from '../hooks/usePositions'
@@ -42,6 +43,7 @@ const UNLOCK_ANIM_DURATION = 3500
 
 export default function Map() {
   const navigate       = useNavigate()
+  const location       = useLocation()
   const prefersReduced = useReducedMotion()
   const { t }          = useTranslation()
 
@@ -69,6 +71,16 @@ export default function Map() {
   const spawnCoords = getCoords('map_character_spawn', viewport)
   const { position, direction, isMoving, duration, moveTo } = useCharacterMovement(spawnCoords)
 
+  // Show toast passed via location.state (e.g. from locked-zone redirect)
+  useEffect(() => {
+    const stateToast = (location.state as { toast?: string } | null)?.toast
+    if (!stateToast) return
+    setMapToast(stateToast)
+    const t = setTimeout(() => setMapToast(null), 2500)
+    window.history.replaceState({}, '')
+    return () => clearTimeout(t)
+  }, [])
+
   // On mount: capture justUnlockedZone, trigger animation, clear from store
   useEffect(() => {
     if (!justUnlockedZone) return
@@ -89,10 +101,7 @@ export default function Map() {
     return () => { clearTimeout(t1); clearTimeout(t2) }
   }, [])
 
-  if (!characterId) {
-    navigate('/select')
-    return null
-  }
+  // Guard handled in App.tsx — no local fallback needed
 
   function showToast(msg: string) {
     setMapToast(msg)
@@ -130,7 +139,7 @@ export default function Map() {
     if (!zone || !zone.playable) return
     const pos = getZonePos(zone)
     setSelectedZone(null)
-    moveTo(pos.x, pos.y, () => navigate(`/zone/${zone.id}`))
+    moveTo(pos.x, pos.y, () => navigate(ROUTES.zone(ZONE_SLUGS[zone.id] ?? zone.id)))
   }
 
   const mapSrc    = isMobile ? '/map/map-mobile.webp' : '/map/map-desktop.webp'
@@ -316,7 +325,7 @@ export default function Map() {
             transition={{ type: 'tween', ease: 'easeInOut', duration }}
           >
             <Character
-              characterId={characterId}
+              characterId={characterId!}
               direction={direction}
               isMoving={isMoving}
               size={isMobile ? 52 : 64}
@@ -346,7 +355,7 @@ export default function Map() {
               </span>
               {missionsCompleted.length === 5 && (
                 <button
-                  onClick={() => navigate('/end')}
+                  onClick={() => navigate(ROUTES.end)}
                   className="ml-2 bg-[#E07856] text-white text-xs font-bold px-3 py-1 rounded-full"
                 >
                   Finalizar turno

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
+import { ROUTES } from '../../lib/routes'
 import MedalsModal from './MedalsModal'
 import CatsModal from './CatsModal'
 
@@ -18,7 +19,7 @@ export default function SideMenu({ onClose }: Props) {
 
   function changeCharacter() {
     onClose()
-    navigate('/select')
+    navigate(ROUTES.select)
   }
 
   return (
