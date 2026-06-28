@@ -5,7 +5,7 @@
     "personality": "Sabio y tranquilo. Muy cariñoso",
     "zone": "zona_relax",
     "isReal": true,
-    "portrait": "/cats/gandalf.webp",
+    "portrait": "/cats/gandalf-portrait.webp",
     "sprite": "/cats/gandalf-sprite.webp",
     "bio": "Gandalf llegó al santuario hace años y desde el primer día demostró tener una personalidad muy especial. Le encanta observarlo todo desde su rincón favorito de la Zona Relax, como si guardara los secretos del santuario. Es el primero en acercarse cuando alguien nuevo llega, y su ronroneo es tan potente que podría calmar cualquier tormenta."
   },
@@ -15,7 +15,7 @@
     "personality": "Siempre busca mimos y comida",
     "zone": "comedor",
     "isReal": true,
-    "portrait": "/cats/tito.webp",
+    "portrait": "/cats/tito-portrait.webp",
     "sprite": "/cats/tito-sprite.webp",
     "bio": "Tito es el alma del comedor. Aparece puntual antes de cada comida, como si llevara un reloj interno perfectamente calibrado. Su forma de pedir mimos es única: te da cabezazos suaves hasta que le hagas caso. Aunque come con entusiasmo, siempre deja sitio para un postre de caricias."
   },
@@ -25,7 +25,7 @@
     "personality": "Princesa esponjosa. Disfruta del sol",
     "zone": "jardines",
     "isReal": true,
-    "portrait": "/cats/vainilla.webp",
+    "portrait": "/cats/vainilla-portrait.webp",
     "sprite": "/cats/vainilla-sprite.webp",
     "bio": "Vainilla es pura elegancia. Su pelo largo y claro brilla especialmente en los jardines cuando el sol de la tarde la ilumina. Es selectiva con las personas en las que confía, pero cuando lo hace, se convierte en tu sombra. Le encanta revolcarse en la hierba fresca y luego pedir que la cepillen."
   },
@@ -35,7 +35,7 @@
     "personality": "Independiente y un corazón de oro",
     "zone": "enfermeria",
     "isReal": true,
-    "portrait": "/cats/pepe.webp",
+    "portrait": "/cats/pepe-portrait.webp",
     "sprite": "/cats/pepe-sprite.webp",
     "bio": "Pepe llegó a la enfermería después de una etapa difícil y allí se quedó, como si supiera que era donde más se necesitaba. Parece entender cuando alguien está triste, y en esos momentos se acerca sin hacer ruido y simplemente está. Es independiente pero nunca indiferente."
   },
@@ -45,7 +45,7 @@
     "personality": "Quiere llamar la atención y algo gruñona",
     "zone": "catio2",
     "isReal": true,
-    "portrait": "/cats/sombra.webp",
+    "portrait": "/cats/sombra-portrait.webp",
     "sprite": "/cats/sombra-sprite.webp",
     "bio": "Sombra tiene carácter, y ella lo sabe. Puede parecer distante al principio, pero en realidad lo que quiere es toda tu atención. Si pasas por el Catio 2 sin saludarla, te lo recordará con un maullido bastante expresivo. Una vez que se decide a quererte, lo hace sin reservas."
   },
@@ -55,7 +55,7 @@
     "personality": "Curiosa y muy buena amiga de Sombra",
     "zone": "catio2",
     "isReal": true,
-    "portrait": "/cats/frida.webp",
+    "portrait": "/cats/frida-portrait.webp",
     "sprite": "/cats/frida-sprite.webp",
     "bio": "Frida y Sombra son inseparables. Frida es la más curiosa del santuario: inspecciona cada nueva caja, cada bolsa, cada herramienta que llega. Es la primera en explorar y la última en cansarse. Su amistad con Sombra es uno de los grandes tesoros del Catio 2."
   }

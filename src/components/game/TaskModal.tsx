@@ -151,11 +151,14 @@ export default function TaskModal({ images, title, reward, longTask = false, onC
                   ? { opacity: 1, scale: [1, 1.02, 1, 1.02, 1] }
                   : { opacity: 1, scale: 1 }
               }
-              exit={{ opacity: 0 }}
+              exit={{ opacity: 0, transition: { duration: 0.9, ease: 'easeInOut' } }}
               transition={
                 phase === 'during' && !prefersReduced
-                  ? { opacity: { duration: 0.6, ease: 'easeInOut' }, scale: { duration: 1.6, repeat: Infinity, ease: 'easeInOut' } }
-                  : { duration: 0.6, ease: 'easeInOut' }
+                  ? {
+                      opacity: { duration: 1.1, ease: 'easeInOut' },
+                      scale: { duration: 1.6, repeat: Infinity, ease: 'easeInOut', delay: 1.2 },
+                    }
+                  : { duration: 1.1, ease: 'easeInOut' }
               }
               draggable={false}
             />
